@@ -1,0 +1,107 @@
+import dotenv from "dotenv";
+import "dotenv/config";
+import { GoogleGenAI } from "@google/genai";
+import refining from "./first_prompt.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+async function finalising(input) {
+  const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API,
+  });
+  const prompt =
+    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Return an array with the answers: " +
+    "\n";
+  const first_prompt = input;
+  const topic = first_prompt.nameOfLiteraryWork;
+  const ragged = [];
+
+  for (const question of first_prompt.questions) {
+    const data = topic + " " + question;
+    let response;
+    let attempts = 0;
+    const maxRetries = 5;
+
+    while (attempts < maxRetries) {
+      try {
+        response = await fetch(process.env.MICROSERVICE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          ragged.push(result);
+          break;
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+      attempts++;
+    }
+  }
+  let uniqueContents = new Set();
+  let destructured = [];
+
+  for (let i = 0; i < ragged.length; ++i) {
+    for (let j = 0; j < 2; ++j) {
+      const content = ragged[i].result[j].content;
+
+      if (!uniqueContents.has(content)) {
+        uniqueContents.add(content);
+        destructured.push(content);
+      }
+    }
+  }
+  let extraInfo = "";
+  for (let i = 0; i < destructured.length; ++i) {
+    extraInfo += destructured[i] + "\n";
+  }
+
+  const finalPrompt =
+    prompt +
+    "title: " +
+    first_prompt.nameOfLiteraryWork +
+    "\n" +
+    "text: " +
+    first_prompt.text +
+    "\n" +
+    "questions: " +
+    first_prompt.questions +
+    "\n" +
+    "extra information: " +
+    destructured;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash-preview-04-17",
+    contents: finalPrompt,
+  });
+
+  const output = response.candidates[0].content.parts[0].text;
+
+  const start = output.indexOf("[");
+  const end = output.lastIndexOf("]");
+
+  if (start === -1 || end === -1) {
+    throw new Error("No JSON object found.");
+  }
+
+  const jsonStr = output.slice(start, end + 1);
+
+  const answersArray = JSON.parse(jsonStr);
+
+  function cleanText(textArray) {
+    return textArray.map((text) => {
+      return text
+        .replace(/[\[\]\"\'\(\)\-]/g, "")
+        .replace(/\n+/g, " ")
+        .trim();
+    });
+  }
+
+  const cleanedText = cleanText(answersArray);
+
+  return cleanedText
+}
+export default finalising

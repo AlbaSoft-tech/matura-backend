@@ -19,6 +19,8 @@ app.use(
   })
 );
 
+app.use(express.json()); 
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/processing", QARoute);

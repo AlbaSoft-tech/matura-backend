@@ -9,15 +9,13 @@ const API_KEY = process.env.VISION_API;
 router.post("/answer", async (req, res) => {
   const { prompt } = req.body;
 
-  console.log(prompt);
-
   try {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
    
     const firstStep = await refining(prompt);
-    console.log(firstStep)
+    
     const answer = await finalising(firstStep);
     console.log(answer)
 

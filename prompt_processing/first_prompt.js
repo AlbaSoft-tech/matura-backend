@@ -5,7 +5,7 @@ async function refining(input){
 
     const question = input
 
-const prompt = ` You will be given a text(optional) and some questions. If there is no text given add all the questions to the unanswered array. If there is a text add the text to the text property. I want you to remove all extra character and just leave the clear questions also number the questions. Do not answer any questions. and return an object like this: 
+const prompt = ` You will be given a text(optional) and some questions. If there is no text given add all the questions to the unanswered array. If there is a text add the text to the text property. I want you to remove all extra character and just leave the clear questions also number the questions. Do not answer any questions. and return a STRICT JSON object like this: 
 
 {
   "nameOfLiteraryWork" : "", 
@@ -36,6 +36,8 @@ ${question}
       
     const jsonStr = answer.slice(start, end + 1);
       
+    console.log(jsonStr)
+    
     const finalAnswer = JSON5.parse(jsonStr);
     return finalAnswer
 

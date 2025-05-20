@@ -44,20 +44,31 @@ async function finalising(input) {
   let uniqueContents = new Set();
   let destructured = [];
 
-  for (let i = 0; i < ragged.length; ++i) {
-    for (let j = 0; j < 2; ++j) {
-      const content = ragged[i].result[j].content;
+  console.log(ragged)
 
-      if (!uniqueContents.has(content)) {
-        uniqueContents.add(content);
-        destructured.push(content);
-      }
+ for (let i = 0; i < ragged.length; ++i) {
+  if (!ragged[i] || !ragged[i].result) continue;
+
+  for (let j = 0; j < ragged[i].result.length; ++j) {
+    const item = ragged[i].result[j];
+    if (!item || !item.content) continue;
+
+    const content = item.content;
+
+    if (!uniqueContents.has(content)) {
+      uniqueContents.add(content);
+      destructured.push(content);
     }
   }
+}
+
   let extraInfo = "";
   for (let i = 0; i < destructured.length; ++i) {
     extraInfo += destructured[i] + "\n";
   }
+
+  console.log(extraInfo)
+
 
   const finalPrompt =
     prompt +
@@ -88,6 +99,8 @@ async function finalising(input) {
   }
 
   const jsonStr = output.slice(start, end + 1);
+
+  console.log(jsonStr)
 
   const answersArray = JSON.parse(jsonStr);
 

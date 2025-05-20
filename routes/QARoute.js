@@ -15,9 +15,11 @@ router.post("/answer", async (req, res) => {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-
+   
     const firstStep = await refining(prompt);
+    console.log(firstStep)
     const answer = await finalising(firstStep);
+    console.log(answer)
 
     res.status(201).json({ answer });
   } catch (error) {

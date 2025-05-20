@@ -37,7 +37,7 @@ ${question}
     const jsonStr = answer.slice(start, end + 1);
       
     console.log(jsonStr)
-    
+
     const finalAnswer = JSON5.parse(jsonStr);
     return finalAnswer
 

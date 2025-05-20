@@ -7,7 +7,7 @@ const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
-  const prompt = req.body;
+  const { prompt } = req.body;
 
   console.log(prompt);
 

@@ -113,6 +113,6 @@ async function finalising(input) {
   }
 
   const cleanedText = cleanText(answersArray);
-  return cleanedText;
+  res.status(201).json({ cleanText });
 }
 export default finalising;

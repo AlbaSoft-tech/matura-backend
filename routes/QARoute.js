@@ -6,7 +6,7 @@ import refining from "../prompt_processing/first_prompt.js";
 const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
-router.post("/answer", upload.array('images'), async (req, res) => {
+router.post("/answer", async (req, res) => {
   const prompt = req.body.prompt
 
   try {

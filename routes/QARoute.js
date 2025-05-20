@@ -7,10 +7,9 @@ const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
-  const prompt = req.body.prompt
+  const prompt = req.body;
 
   try {
-
     if (!prompt.trim()) {
       return res.status(400).json({ message: "No prompt!" });
     }

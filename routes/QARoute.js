@@ -6,14 +6,11 @@ import refining from "../prompt_processing/first_prompt.js";
 const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
-const storage = multer.memoryStorage();  
-const upload = multer({ storage: storage }); 
-
 router.post("/answer", upload.array('images'), async (req, res) => {
   const prompt = req.body.prompt
 
   try {
-    
+
     if (!prompt.trim()) {
       return res.status(400).json({ message: "No prompt!" });
     }

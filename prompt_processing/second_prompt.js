@@ -10,7 +10,7 @@ async function finalising(input) {
     apiKey: process.env.GEMINI_API,
   });
   const prompt =
-    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Return an array with the answers: " +
+    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Answer each question clearly in full sentences without saying things like 'based on the text' or referencing the source. Return an array with the answers: " +
     "\n";
   const first_prompt = input;
   const topic = first_prompt.nameOfLiteraryWork;

@@ -35,6 +35,13 @@ userSchema.methods.comparePassword = async function (userPassword) {
   return await bcrypt.compare(userPassword, this.password);
 };
 
+userSchema.methods.compareCode = async function (userCode) {
+  if(userCode == this.forgotPasswordCode &&  new Date(Date.now()) < this.expiresAt){
+    return true
+  }
+  return false
+};
+
 const User = mongoose.model("User", userSchema);
 
 export default User;

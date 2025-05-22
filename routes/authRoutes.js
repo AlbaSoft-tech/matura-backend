@@ -120,7 +120,7 @@ router.post("/forgotPassword", async (req, res) => {
 
     const code = getSixDigitRandom();
 
-    await db.collection("users").updateOne(
+    await User.updateOne(
       { email: email },
       {
         $set: {
@@ -129,6 +129,8 @@ router.post("/forgotPassword", async (req, res) => {
         },
       }
     );
+
+    user.save();
 
     const transporter = nodemailer.createTransport({
       host: "live.smtp.mailtrap.io",

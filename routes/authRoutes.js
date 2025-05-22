@@ -119,16 +119,13 @@ router.post("/forgotPassword", async (req, res) => {
     }
 
     const code = getSixDigitRandom();
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    await User.updateOne(
-      { email: email },
-      {
-        $set: {
-          forgotPasswordCode: code,
-          expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-        },
-      }
-    );
+    user.resetCode = code;
+    await user.save();
 
     const transporter = nodemailer.createTransport({
       service: "gmail",

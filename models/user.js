@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 8,
     },
+    resetCode: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -36,10 +40,13 @@ userSchema.methods.comparePassword = async function (userPassword) {
 };
 
 userSchema.methods.compareCode = async function (userCode) {
-  if(userCode == this.forgotPasswordCode &&  new Date(Date.now()) < this.expiresAt){
-    return true
+  if (
+    userCode == this.forgotPasswordCode &&
+    new Date(Date.now()) < this.expiresAt
+  ) {
+    return true;
   }
-  return false
+  return false;
 };
 
 const User = mongoose.model("User", userSchema);

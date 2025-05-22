@@ -135,14 +135,14 @@ router.post("/forgotPassword", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: "api",
+        user: "apismtp@mailtrap.io",
         pass: "9a74d8f770903104400edcc0b3966123",
       },
     });
 
     (async () => {
       const info = await transporter.sendMail({
-        from: '"Matura MK" <crazyanimator4l@gmail.com>',
+        from: '"Matura MK <apismtp@mailtrap.io>"',
         to: email,
         subject: "Your Password Reset Code for Matura MK",
         text: `Hello,

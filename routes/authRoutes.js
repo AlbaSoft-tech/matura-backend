@@ -131,18 +131,22 @@ router.post("/forgotPassword", async (req, res) => {
     );
 
     const transporter = nodemailer.createTransport({
-      host: "live.smtp.mailtrap.io",
+      service: "gmail",
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
-        user: "api",
-        pass: "9a74d8f770903104400edcc0b3966123",
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
       },
     });
 
     (async () => {
       const info = await transporter.sendMail({
-        from: '"Matura MK <apismtp@mailtrap.io>"',
+        from: {
+          name: "Matura MK",
+          address: process.env.EMAIL,
+        },
         to: email,
         subject: "Your Password Reset Code for Matura MK",
         text: `Hello,

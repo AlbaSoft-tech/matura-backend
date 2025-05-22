@@ -135,7 +135,7 @@ router.post("/forgotPassword", async (req, res) => {
       port: 587,
       secure: false,
       auth: {
-        user: "apismtp@mailtrap.io",
+        user: "api",
         pass: "9a74d8f770903104400edcc0b3966123",
       },
     });

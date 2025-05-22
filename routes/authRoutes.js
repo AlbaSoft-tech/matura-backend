@@ -59,6 +59,8 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(req.body);
+    console.log(email, password);
 
     if (!email || !password) {
       return res.status(400).json({ message: "All fields required" });
@@ -66,7 +68,7 @@ router.post("/login", async (req, res) => {
 
     const user = await User.findOne({ email: email });
 
-    console.log("Found user")
+    console.log("Found user");
 
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
@@ -75,7 +77,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken(user._id);
-    console.log("done")
+    console.log("done");
 
     res.status(200).json({
       token,
@@ -113,7 +115,7 @@ router.post("/forgotPassword", async (req, res) => {
     const { email } = req.body;
 
     function getSixDigitRandom() {
-      return Math.floor(100000 + Math.random() * 900000); 
+      return Math.floor(100000 + Math.random() * 900000);
     }
 
     const code = getSixDigitRandom();
@@ -128,23 +130,22 @@ router.post("/forgotPassword", async (req, res) => {
       }
     );
 
+    const transporter = nodemailer.createTransport({
+      host: "live.smtp.mailtrap.io",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "api",
+        pass: "9a74d8f770903104400edcc0b3966123",
+      },
+    });
 
-const transporter = nodemailer.createTransport({
-  host: "live.smtp.mailtrap.io",
-  port: 587,
-  secure: false, 
-  auth: {
-    user: "api",
-    pass: "9a74d8f770903104400edcc0b3966123",
-  },
-});
-
-(async () => {
-  const info = await transporter.sendMail({
-    from: '"Matura MK" <crazyanimator4l@gmail.com>',
-to: email, 
-subject: "Your Password Reset Code for Matura MK",
-text: `Hello,
+    (async () => {
+      const info = await transporter.sendMail({
+        from: '"Matura MK" <crazyanimator4l@gmail.com>',
+        to: email,
+        subject: "Your Password Reset Code for Matura MK",
+        text: `Hello,
 
 You recently requested a password reset for your Matura MK account.
 
@@ -157,7 +158,7 @@ If you did not request a password reset, please ignore this email. Do not share 
 Thank you,
 The Matura MK Team
 `,
-html: `
+        html: `
 <div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
     <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Password Reset Request</h2>
     <p>Hello,</p>
@@ -177,13 +178,13 @@ html: `
         This is an automated email, please do not reply.
     </p>
 </div>
-`
-  });
+`,
+      });
 
-  console.log("Message sent");
-})();
+      console.log("Message sent");
+    })();
 
-    return res.status(200).json({message: "Code sent, check your email"})
+    return res.status(200).json({ message: "Code sent, check your email" });
   } catch (error) {
     console.log("Error in forgotPassword route", error);
     res.status(500).json({ message: "Internal server error" });
@@ -194,9 +195,9 @@ router.post("/verifyCode", async (req, res) => {
   try {
     const { code, email } = req.body;
 
-    const user = await User.findOne({ email: email }); 
+    const user = await User.findOne({ email: email });
 
-      if (!user) {
+    if (!user) {
       return res.status(401).json({ message: "Invalid code or email." });
     }
 
@@ -217,7 +218,7 @@ router.post("/changePassword", async (req, res) => {
   try {
     const { newPassword, email } = req.body;
 
-     const authHeader = req.headers["authorization"];
+    const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing authorisation header" });
     }
@@ -226,7 +227,7 @@ router.post("/changePassword", async (req, res) => {
 
     const verification = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findOne({ email: email }); 
+    const user = await User.findOne({ email: email });
     user.$set({
       password: newPassword,
     });

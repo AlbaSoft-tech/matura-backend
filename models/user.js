@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    resetCodeExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -40,10 +44,7 @@ userSchema.methods.comparePassword = async function (userPassword) {
 };
 
 userSchema.methods.compareCode = async function (userCode) {
-  if (
-    userCode == this.forgotPasswordCode &&
-    new Date(Date.now()) < this.expiresAt
-  ) {
+  if (userCode == this.resetCode && new Date(Date.now()) < this.resetCodeExpires) {
     return true;
   }
   return false;

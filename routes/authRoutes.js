@@ -16,7 +16,6 @@ const forgotPasswordToken = (email) => {
 router.post("/signup", async (req, res) => {
   try {
     const { email, username, password } = req.body;
-    console.log(username, email, password)
 
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -67,6 +66,8 @@ router.post("/login", async (req, res) => {
 
     const user = await User.findOne({ email: email });
 
+    console.log("Found user")
+
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isPasswordCorrect = await user.comparePassword(password);
@@ -74,6 +75,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken(user._id);
+    console.log("done")
 
     res.status(200).json({
       token,

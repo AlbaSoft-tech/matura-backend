@@ -130,8 +130,6 @@ router.post("/forgotPassword", async (req, res) => {
       }
     );
 
-    user.save();
-
     const transporter = nodemailer.createTransport({
       host: "live.smtp.mailtrap.io",
       port: 587,

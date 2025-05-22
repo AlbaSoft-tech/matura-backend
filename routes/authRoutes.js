@@ -15,7 +15,7 @@ const forgotPasswordToken = (email) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, username, password } = req.body;
     console.log(username, email, password)
 
     if (!username || !email || !password) {

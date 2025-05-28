@@ -29,16 +29,16 @@ router.post("/answer", async (req, res) => {
 
 router.post("/english", async (req, res) => {
   const { prompt } = req.body;
-  console.log(prompt)
+  console.log(prompt);
 
   try {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-    
-    const answer = Answer(prompt)
 
-    console.log(answer)
+    const answer = await Answer(prompt);
+
+    console.log(answer);
 
     res.status(201).json({ answer });
   } catch (error) {

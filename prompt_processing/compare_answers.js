@@ -13,6 +13,6 @@ async function CompareAnswers(input) {
   });
 
   const answer = response.text;
-  return finalAnswer;
+  return answer;
 }
 export default CompareAnswers;

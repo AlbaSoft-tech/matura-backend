@@ -13,7 +13,11 @@ job.start();
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = ["http://localhost:8081", "http://localhost:5173"];
+      const allowedOrigins = [
+        "http://localhost:8081",
+        "http://localhost:5173",
+        "https://matura-mk.vercel.app",
+      ];
 
       if (allowedOrigins.includes(origin) || !origin) {
         callback(null, true);

@@ -16,7 +16,7 @@ app.use(
       const allowedOrigins = [
         "http://localhost:8081",
         "http://localhost:5173",
-        "https://matura-mk-pi.vercel.app",
+        "https://matura-mk.vercel.app",
       ];
 
       if (allowedOrigins.includes(origin) || !origin) {

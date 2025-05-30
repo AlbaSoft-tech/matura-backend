@@ -12,7 +12,7 @@ async function finalising(input) {
     apiKey: process.env.GEMINI_API,
   });
   const prompt =
-    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Answer each question clearly in albanian in full sentences without saying things like 'based on the text' or referencing the source. Return a STRICTLY JSON ARRAY with the answers: " +
+    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Answer each question clearly in albanian in full sentences without saying things like 'based on the text' or referencing the source." +
     "\n";
   const first_prompt = input;
   const topic = first_prompt.nameOfLiteraryWork;
@@ -92,37 +92,15 @@ async function finalising(input) {
 
   const output = response.candidates[0].content.parts[0].text;
 
-  const start = output.indexOf("[");
-  const end = output.lastIndexOf("]");
-
-  if (start === -1 || end === -1) {
-    throw new Error("No JSON object found.");
+  function cleanText(text) {
+    return text
+      .replace(/[\[\]\"\'\(\)\-\*]/g, "")
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
-  const jsonStr = output.slice(start, end + 1);
-
-  console.log(jsonStr);
-
-  const answersArray = JSON5.parse(jsonStr);
-
-  function cleanText(textArray) {
-    return textArray.flatMap((text, index) => {
-      console.log(`Cleaning text at index ${index}:`, text); // Log text content
-
-      if (typeof text === "string") {
-        return text
-          .replace(/[\[\]\"\'\(\)\-]/g, "") // Remove unwanted characters
-          .replace(/\n+/g, " ") // Remove extra newlines
-          .trim(); // Trim the text
-      }
-
-      // If it's not a string, return it as is, and log the issue
-      console.warn(`Skipping non-string at index ${index}:`, text);
-      return text;
-    });
-  }
-
-  const cleanedText = cleanText(answersArray);
+  const cleanedText = cleanText(output);
 
   return cleanedText;
 }

@@ -126,12 +126,4 @@ async function finalising(input) {
 
   return cleanedText;
 }
-
-console.log(
-  await finalising({
-    nameOfLiteraryWork: "",
-    text: "",
-    questions: ["1. kush eshte naim frasheri"],
-  })
-);
 export default finalising;

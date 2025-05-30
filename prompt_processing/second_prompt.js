@@ -4,6 +4,8 @@ import { GoogleGenAI } from "@google/genai";
 import refining from "./first_prompt.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import JSON5 from "json5";
+import { text } from "stream/consumers";
 
 async function finalising(input) {
   const ai = new GoogleGenAI({
@@ -27,7 +29,7 @@ async function finalising(input) {
         response = await fetch(process.env.MICROSERVICE, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data }),
+          body: JSON5.stringify({ data }),
         });
 
         if (response.ok) {
@@ -101,14 +103,22 @@ async function finalising(input) {
 
   console.log(jsonStr);
 
-  const answersArray = JSON.parse(jsonStr);
+  const answersArray = JSON5.parse(jsonStr);
 
   function cleanText(textArray) {
-    return textArray.map((text) => {
-      return text
-        .replace(/[\[\]\"\'\(\)\-]/g, "")
-        .replace(/\n+/g, " ")
-        .trim();
+    return textArray.flatMap((text, index) => {
+      console.log(`Cleaning text at index ${index}:`, text); // Log text content
+
+      if (typeof text === "string") {
+        return text
+          .replace(/[\[\]\"\'\(\)\-]/g, "") // Remove unwanted characters
+          .replace(/\n+/g, " ") // Remove extra newlines
+          .trim(); // Trim the text
+      }
+
+      // If it's not a string, return it as is, and log the issue
+      console.warn(`Skipping non-string at index ${index}:`, text);
+      return text;
     });
   }
 
@@ -116,4 +126,12 @@ async function finalising(input) {
 
   return cleanedText;
 }
+
+console.log(
+  await finalising({
+    nameOfLiteraryWork: "",
+    text: "",
+    questions: ["1. kush eshte naim frasheri"],
+  })
+);
 export default finalising;

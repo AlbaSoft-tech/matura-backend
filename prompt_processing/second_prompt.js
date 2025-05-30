@@ -6,13 +6,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 async function finalising(input) {
-
-  console.log(input)
   const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API,
   });
   const prompt =
-    'You will be given a text (optionally), some extra information, and questions. All answers should be in Albanian, in full sentences, and ONLY answer from the provided text or extra information if possible. If not, find information on the internet. **Your final output MUST be a pure JSON array of strings, where each string is an answer to a corresponding question. Do NOT include any other text, markdown, or formatting outside the JSON array.** For example: `["Answer 1.", "Answer 2."]`\n' +
+    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Answer each question clearly in albanian in full sentences without saying things like 'based on the text' or referencing the source. Return a STRICTLY JSON ARRAY with the answers: " +
     "\n";
   const first_prompt = input;
   const topic = first_prompt.nameOfLiteraryWork;

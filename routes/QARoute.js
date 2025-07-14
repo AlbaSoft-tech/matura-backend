@@ -3,46 +3,93 @@ import finalising from "../prompt_processing/second_prompt.js";
 import refining from "../prompt_processing/first_prompt.js";
 import Answer from "../prompt_processing/english_prompt.js";
 import CompareAnswers from "../prompt_processing/compare_answers.js";
+import User from "../models/user.js";
 
 const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
-  const { prompt } = req.body;
+  const { prompt, type, email, language } = req.body;
 
   try {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-    console.log(prompt);
-    const firstStep = await refining(prompt);
 
-    const answer = await finalising(firstStep);
-    console.log(answer);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.status(201).json({ answer });
+    if (type === "photo") {
+      if (user.tokens < 10) {
+        return res.status(403).json({ message: "Not enough tokens" });
+      }
+
+      const firstStep = await refining(prompt);
+      const answer = await finalising(firstStep, language);
+
+      user.tokens -= 10;
+      await user.save();
+
+      return res.status(201).json({ answer });
+    } else {
+      if (user.tokens < 1) {
+        return res.status(403).json({ message: "Not enough tokens" });
+      }
+
+      const firstStep = await refining(prompt);
+      const answer = await finalising(firstStep, language);
+
+      user.tokens -= 1;
+      await user.save();
+
+      return res.status(201).json({ answer });
+    }
   } catch (error) {
-    console.log("Error in answer route", error);
+    console.error("Error in /answer route:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 router.post("/english", async (req, res) => {
-  const { prompt } = req.body;
-  console.log(prompt);
+  const { prompt, type, email } = req.body;
 
   try {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
 
-    const answer = await Answer(prompt);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    console.log(answer);
+    if (type === "photo") {
+      if (user.tokens < 10) {
+        return res.status(403).json({ message: "Not enough tokens" });
+      }
 
-    res.status(201).json({ answer });
+      const answer = await Answer(prompt);
+
+      user.tokens -= 10;
+      await user.save();
+
+      return res.status(201).json({ answer });
+    } else {
+      if (user.tokens < 1) {
+        return res.status(403).json({ message: "Not enough tokens" });
+      }
+
+      const answer = await Answer(prompt);
+
+      user.tokens -= 1;
+      await user.save();
+
+      return res.status(201).json({ answer });
+    }
   } catch (error) {
-    console.log("Error in answer route", error);
+    console.error("Error in /answer route:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

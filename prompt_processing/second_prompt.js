@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import JSON5 from "json5";
 import { text } from "stream/consumers";
 
-async function finalising(input) {
+async function finalising(input, language) {
   const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API,
   });
@@ -29,7 +29,7 @@ async function finalising(input) {
         response = await fetch(process.env.MICROSERVICE, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON5.stringify({ data }),
+          body: JSON5.stringify({ data, language }),
         });
 
         if (response.ok) {

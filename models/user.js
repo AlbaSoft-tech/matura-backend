@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    tokens: {
+      type: Number, 
+      default: 0,
+    },
+    webUnlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

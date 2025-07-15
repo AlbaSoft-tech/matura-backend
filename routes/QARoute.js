@@ -25,9 +25,13 @@ router.post("/answer", async (req, res) => {
       if (user.tokens < 10) {
         return res.status(403).json({ message: "Not enough tokens" });
       }
-
+      let answer;
       const firstStep = await refining(prompt);
-      const answer = await finalising(firstStep, language);
+      if (firstStep.language.toLowerCase() !== "english") {
+        answer = await finalising(firstStep, firstStep.language.toLowerCase());
+      } else {
+        answer = await Answer(prompt);
+      }
 
       user.tokens -= 10;
       await user.save();
@@ -37,11 +41,20 @@ router.post("/answer", async (req, res) => {
       if (user.tokens < 1) {
         return res.status(403).json({ message: "Not enough tokens" });
       }
-
+      let answer;
       const firstStep = await refining(prompt);
-      const answer = await finalising(firstStep, language);
 
-      user.tokens -= 1;
+      if (firstStep.valid === false) {
+        return res.status(400).json({ message: "Invalid prompt" });
+      }
+
+      if (firstStep.language.toLowerCase() !== "english") {
+        answer = await finalising(firstStep, firstStep.language.toLowerCase());
+      } else {
+        answer = await Answer(prompt);
+      }
+
+      user.tokens -= 0.5;
       await user.save();
 
       return res.status(201).json({ answer });
@@ -51,7 +64,7 @@ router.post("/answer", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
+/*
 router.post("/english", async (req, res) => {
   const { prompt, type, email } = req.body;
 
@@ -93,6 +106,7 @@ router.post("/english", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+*/
 
 router.post("/compare-answers", async (req, res) => {
   const { prompt } = req.body;

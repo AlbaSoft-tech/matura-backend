@@ -46,9 +46,7 @@ router.post("/signup", async (req, res) => {
     const token = generateToken(user._id);
 
     res.status(201).json({
-      token,
-      user: user.username,
-      email: user.email,
+      message: "User created successfully",
     });
   } catch (error) {
     console.log("Error in register route", error);
@@ -82,7 +80,9 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         username: user.username,
-        email: user.email
+        email: user.email,
+        tokens: user.tokens,
+        testUnlocked: user.testUnlocked,
       },
     });
   } catch (error) {

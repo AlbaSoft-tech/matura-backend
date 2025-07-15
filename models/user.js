@@ -30,9 +30,9 @@ const userSchema = new mongoose.Schema(
       type: Number, 
       default: 0,
     },
-    webUnlocked: {
+    testUnlocked: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   { timestamps: true }

@@ -21,8 +21,9 @@ router.post("/answer", async (req, res) => {
     const token = authHeader.split(" ")[1];
     console.log(token);
     console.log("token recieved decoding email");
+    console.log(process.env.JWT_SECRET)
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log("decoded token: ", decoded);
     const email = decoded.email;
     console.log("user id decoded: ", decoded._id);
     console.log("email decoded: ", email);

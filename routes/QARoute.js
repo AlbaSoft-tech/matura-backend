@@ -4,18 +4,31 @@ import refining from "../prompt_processing/first_prompt.js";
 import Answer from "../prompt_processing/english_prompt.js";
 import CompareAnswers from "../prompt_processing/compare_answers.js";
 import User from "../models/user.js";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
-  const { prompt, type, email, language } = req.body;
+  const { prompt, type} = req.body;
 
   try {
+    const authHeader = req.headers["authorization"];
+        if (!authHeader) {
+          return res.status(401).json({ message: "Missing authorisation header" });
+        }
+    
+        const token = authHeader.split(" ")[1];
+    
+        let decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const email = decoded.email;
+    
+
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-
+    console.log(email)
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });

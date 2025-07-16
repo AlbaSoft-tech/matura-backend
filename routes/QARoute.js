@@ -10,30 +10,28 @@ const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
-  const { prompt, type} = req.body;
+  const { prompt, type } = req.body;
 
   try {
-    const authHeader = req.headers["authorization"];
-        if (!authHeader) {
-          return res.status(401).json({ message: "Missing authorisation header" });
-        }
-    
-        const token = authHeader.split(" ")[1];
-    
-        let decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const authHeader = req.headers["Authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
 
-        const email = decoded.email;
-    
+    const token = authHeader.split(" ")[1];
+    console.log("token recieved decoding email")
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    const email = decoded.email;
+    console.log("email decoded: ", email)
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-    console.log(email)
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    console.log("user found")
     if (type === "photo") {
       if (user.tokens < 10) {
         return res.status(403).json({ message: "Not enough tokens" });

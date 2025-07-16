@@ -6,7 +6,7 @@ import nodemailer from "nodemailer";
 const router = express.Router();
 
 const generateToken = (email) => {
-  return jwt.sign({ email }, process.env.JWT_SECRET);
+  return jwt.sign({ email: email }, process.env.JWT_SECRET);
 };
 
 const forgotPasswordToken = (email) => {

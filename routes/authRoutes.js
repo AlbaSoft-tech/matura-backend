@@ -43,8 +43,6 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
 
-    const token = generateToken(user._id);
-
     res.status(201).json({
       message: "User created successfully",
     });
@@ -73,7 +71,7 @@ router.post("/login", async (req, res) => {
     if (!isPasswordCorrect)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = generateToken(user._id);
+    const token = generateToken(email);
     console.log("done");
 
     res.status(200).json({

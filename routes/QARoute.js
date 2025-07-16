@@ -24,6 +24,7 @@ router.post("/answer", async (req, res) => {
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const email = decoded.email;
+    console.log("user id decoded: ", decoded._id);
     console.log("email decoded: ", email);
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });

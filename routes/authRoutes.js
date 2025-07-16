@@ -5,8 +5,8 @@ import nodemailer from "nodemailer";
 
 const router = express.Router();
 
-const generateToken = (userId, username, email) => {
-  return jwt.sign({ userId, username, email }, process.env.JWT_SECRET);
+const generateToken = (email) => {
+  return jwt.sign({ email }, process.env.JWT_SECRET);
 };
 
 const forgotPasswordToken = (email) => {
@@ -55,7 +55,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password)
+    console.log(email, password);
 
     if (!email || !password) {
       return res.status(400).json({ message: "All fields required" });

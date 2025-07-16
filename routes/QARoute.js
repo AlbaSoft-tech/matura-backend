@@ -52,7 +52,7 @@ router.post("/answer", async (req, res) => {
 
       return res.status(201).json({ answer });
     } else {
-      if (user.tokens < 1) {
+      if (user.tokens < 0.5) {
         return res.status(403).json({ message: "Not enough tokens" });
       }
       let answer;

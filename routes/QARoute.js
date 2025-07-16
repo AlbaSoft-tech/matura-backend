@@ -28,7 +28,7 @@ router.post("/answer", async (req, res) => {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

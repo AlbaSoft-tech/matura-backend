@@ -81,6 +81,7 @@ router.post("/login", async (req, res) => {
         email: user.email,
         tokens: user.tokens,
         testUnlocked: user.testUnlocked,
+        completedTests: user.completedTests,
       },
     });
   } catch (error) {
@@ -98,9 +99,12 @@ router.post("/token", async (req, res) => {
 
     const token = authHeader.split(" ")[1];
 
-    const verification = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const email = decoded.email
+    const user = await User.findOne({ email: email });
 
-    return res.status(200).json({ message: "Authorised" });
+
+    return res.status(200).json({ message: "Authorised", completedTests: user.completedTests });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token" });

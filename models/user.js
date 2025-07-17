@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     testUnlocked: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { timestamps: true }

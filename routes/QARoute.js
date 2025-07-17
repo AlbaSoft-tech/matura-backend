@@ -21,7 +21,7 @@ router.post("/answer", async (req, res) => {
     const token = authHeader.split(" ")[1];
     console.log(token);
     console.log("token recieved decoding email");
-    console.log(process.env.JWT_SECRET)
+    console.log(process.env.JWT_SECRET);
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("decoded token: ", decoded);
     const email = decoded.email;
@@ -123,18 +123,37 @@ router.post("/english", async (req, res) => {
 */
 
 router.post("/compare-answers", async (req, res) => {
-  const { prompt } = req.body;
+  const { prompt, index, language } = req.body;
   console.log(prompt);
 
   try {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
 
+    const token = authHeader.split(" ")[1];
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const email = decoded.email;
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.testUnlocked === false) {
+      return res.status(403).json({ message: "Test not unlocked" });
+    }
+
+    if (user.checkTestTokens < 1) {
+      return res.status(403).json({ message: "abused test tokens" });
+    }
     const answer = await CompareAnswers(prompt);
-
-    console.log(answer);
-
+    user.checkTestTokens -= 1;
+    user.completedTests[language].push(index);
+    await user.save();
     res.status(201).json({ answer });
   } catch (error) {
     console.log("Error in answer route", error);

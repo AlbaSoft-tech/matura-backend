@@ -34,6 +34,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    checkTestTokens: {
+      type: Number,
+      default: 500,
+    },
+    completedTests: {
+      type: Object,
+      default: {turkish: [], english: [], albanian: [], macedonian: []},
+    }
   },
   { timestamps: true }
 );

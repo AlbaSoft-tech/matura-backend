@@ -104,7 +104,8 @@ router.post("/token", async (req, res) => {
     const user = await User.findOne({ email: email });
 
 
-    return res.status(200).json({ message: "Authorised", completedTests: user.completedTests });
+    return res.status(200).json({ message: "Authorised", completedTests: user.completedTests, 
+      testUnlocked: user.testUnlocked, tokens: user.tokens });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token" });

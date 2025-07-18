@@ -2,6 +2,10 @@ import express from "express";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import testeShqip from "../tests/testeShqip.json"; //kam mbet ke 2020 juni
+import englishTests from "../tests/englishTests.json";
+import testeMaqedonisht from "../tests/testeMaqedonisht.json";
+import testeTurqisht from "../tests/testeTurqisht.json";
 
 const router = express.Router();
 
@@ -10,7 +14,9 @@ const generateToken = (email) => {
 };
 
 const forgotPasswordToken = (email) => {
-  return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, { expiresIn: "10m" });
+  return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, {
+    expiresIn: "10m",
+  });
 };
 
 router.post("/signup", async (req, res) => {
@@ -83,6 +89,12 @@ router.post("/login", async (req, res) => {
         testUnlocked: user.testUnlocked,
         completedTests: user.completedTests,
       },
+      tests: {
+        albanian: testeShqip,
+        turkish: testeTurqisht,
+        english: englishTests,
+        macedonian: testeMaqedonisht,
+      },
     });
   } catch (error) {
     console.log("Error in login route", error);
@@ -100,12 +112,17 @@ router.post("/token", async (req, res) => {
     const token = authHeader.split(" ")[1];
 
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const email = decoded.email
+    const email = decoded.email;
     const user = await User.findOne({ email: email });
 
-
-    return res.status(200).json({ message: "Authorised", completedTests: user.completedTests, 
-      testUnlocked: user.testUnlocked, tokens: user.tokens });
+    return res
+      .status(200)
+      .json({
+        message: "Authorised",
+        completedTests: user.completedTests,
+        testUnlocked: user.testUnlocked,
+        tokens: user.tokens,
+      });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token" });

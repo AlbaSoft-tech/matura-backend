@@ -10,7 +10,7 @@ const generateToken = (email) => {
 };
 
 const forgotPasswordToken = (email) => {
-  return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" });
+  return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, { expiresIn: "10m" });
 };
 
 router.post("/signup", async (req, res) => {
@@ -211,7 +211,7 @@ router.post("/verifyCode", async (req, res) => {
 
     if (!isValidCode) return res.status(401).json({ message: "Invalid code" });
 
-    return res.status(200).json({ token, message: "Valid Token" });
+    return res.status(200).json({ token: token, message: "Valid Token" });
   } catch (error) {
     console.log("Error in verifyCode route", error);
     res.status(500).json({ message: "Internal server error" });
@@ -220,7 +220,7 @@ router.post("/verifyCode", async (req, res) => {
 
 router.post("/changePassword", async (req, res) => {
   try {
-    const { newPassword, email } = req.body;
+    const { newPassword } = req.body;
 
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
@@ -229,9 +229,9 @@ router.post("/changePassword", async (req, res) => {
 
     const token = authHeader.split(" ")[1];
 
-    const verification = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded = jwt.verify(token, process.env.JWT_FORGOT_SECRET);
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: decoded.email });
     user.$set({
       password: newPassword,
     });

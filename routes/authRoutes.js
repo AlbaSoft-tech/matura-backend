@@ -2,10 +2,10 @@ import express from "express";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import testeShqip from "../tests/testeShqip.json"; //kam mbet ke 2020 juni
-import englishTests from "../tests/englishTests.json";
-import testeMaqedonisht from "../tests/testeMaqedonisht.json";
-import testeTurqisht from "../tests/testeTurqisht.json";
+import testeShqip from "../tests/testeShqip.json" with { type: "json" };
+import englishTests from "../tests/englishTests.json" with { type: "json" };
+import testeMaqedonisht from "../tests/testeMaqedonisht.json" with { type: "json" };
+import testeTurqisht from "../tests/testeTurqisht.json" with { type: "json" };
 
 const router = express.Router();
 

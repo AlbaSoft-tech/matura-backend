@@ -78,7 +78,14 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken(email);
-    console.log("done");
+    const tests = {
+        albanian: testeShqip,
+        turkish: testeTurqisht,
+        english: englishTests,
+        macedonian: testeMaqedonisht,
+      }
+      
+    console.log("sending tests: " + tests)
 
     res.status(200).json({
       token,
@@ -89,12 +96,7 @@ router.post("/login", async (req, res) => {
         testUnlocked: user.testUnlocked,
         completedTests: user.completedTests,
       },
-      tests: {
-        albanian: testeShqip,
-        turkish: testeTurqisht,
-        english: englishTests,
-        macedonian: testeMaqedonisht,
-      },
+      tests: tests,
     });
   } catch (error) {
     console.log("Error in login route", error);

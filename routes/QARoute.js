@@ -127,19 +127,36 @@ router.post("/compare-answers", async (req, res) => {
   console.log(index, language);
 
   try {
-    if (!prompt) {
-      return res.status(400).json({ message: "No prompt!" });
+    if (typeof prompt !== "string" || prompt.trim() === "") {
+      console.log("Backend - Error: Invalid or empty prompt.");
+      return res
+        .status(400)
+        .json({ message: "Invalid or empty prompt provided." });
     }
-    if(!index || !language){
-      return res.status(400).json({message: "incomplete request"      })
+    if (
+      typeof index !== "number" ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      typeof language !== "string" ||
+      language.trim() === ""
+    ) {
+      console.log(
+        "Backend - Error: Invalid 'index' or 'language' parameters. Index:",
+        index,
+        "Language:",
+        language
+      );
+      return res
+        .status(400)
+        .json({ message: "Invalid 'index' or 'language' parameters." });
     }
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing authorisation header" });
     }
-    console.log("everything needed")
+    console.log("everything needed");
     const token = authHeader.split(" ")[1];
-    console.log(token)
+    console.log(token);
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
     const email = decoded.email;
 
@@ -150,13 +167,13 @@ router.post("/compare-answers", async (req, res) => {
     if (user.testUnlocked === false) {
       return res.status(403).json({ message: "Test not unlocked" });
     }
-    console.log("user found")
+    console.log("user found");
 
     if (user.checkTestTokens < 1) {
       return res.status(403).json({ message: "abused test tokens" });
     }
     const answer = await CompareAnswers(prompt);
-    console.log(answer)
+    console.log(answer);
     user.checkTestTokens -= 1;
     user.completedTests[language].push(index);
     await user.save();

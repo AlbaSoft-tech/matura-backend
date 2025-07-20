@@ -124,7 +124,7 @@ router.post("/english", async (req, res) => {
 
 router.post("/compare-answers", async (req, res) => {
   const { prompt, index, language } = req.body;
-  console.log(prompt);
+  console.log(index, language);
 
   try {
     if (!prompt) {

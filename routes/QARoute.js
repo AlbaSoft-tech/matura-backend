@@ -130,12 +130,16 @@ router.post("/compare-answers", async (req, res) => {
     if (!prompt) {
       return res.status(400).json({ message: "No prompt!" });
     }
+    if(!index || !language){
+      return res.status(400).json({message: "incomplete request"      })
+    }
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing authorisation header" });
     }
-
+    console.log("everything needed")
     const token = authHeader.split(" ")[1];
+    console.log(token)
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
     const email = decoded.email;
 
@@ -146,11 +150,13 @@ router.post("/compare-answers", async (req, res) => {
     if (user.testUnlocked === false) {
       return res.status(403).json({ message: "Test not unlocked" });
     }
+    console.log("user found")
 
     if (user.checkTestTokens < 1) {
       return res.status(403).json({ message: "abused test tokens" });
     }
     const answer = await CompareAnswers(prompt);
+    console.log(answer)
     user.checkTestTokens -= 1;
     user.completedTests[language].push(index);
     await user.save();

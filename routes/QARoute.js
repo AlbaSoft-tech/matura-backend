@@ -175,7 +175,10 @@ router.post("/compare-answers", async (req, res) => {
     const answer = await CompareAnswers(prompt);
     console.log(answer);
     user.checkTestTokens -= 1;
-    user.completedTests[language] = [...user.completedTests[language], index];
+    user.completedTests[language.toLowerCase()] = [
+      ...user.completedTests[language.toLowerCase()],
+      index,
+    ];
     await user.save();
     res.status(201).json({ answer });
   } catch (error) {

@@ -164,14 +164,14 @@ router.post("/forgotPassword", async (req, res) => {
     (async () => {
       const info = await transporter.sendMail({
         from: {
-          name: "Matura MK",
+          name: "Matura ",
           address: process.env.EMAIL,
         },
         to: email,
-        subject: "Your Password Reset Code for Matura MK",
+        subject: "Your Password Reset Code for Matura",
         text: `Hello,
 
-You recently requested a password reset for your Matura MK account.
+You recently requested a password reset for your Matura account.
 
 Your password reset code is: ${code}
 
@@ -180,13 +180,13 @@ Please use this code on the password reset page to set a new password. THIS CODE
 If you did not request a password reset, please ignore this email. Do not share this code with anyone.
 
 Thank you,
-The Matura MK Team
+The Matura Team
 `,
         html: `
 <div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
     <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Password Reset Request</h2>
     <p>Hello,</p>
-    <p>You recently requested a password reset for your Matura MK account. Please use the following code to reset your password:</p>
+    <p>You recently requested a password reset for your Matura account. Please use the following code to reset your password:</p>
     <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
         <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
     </div>
@@ -196,7 +196,7 @@ The Matura MK Team
     </p>
     <p style="margin-top: 30px; text-align: center; color: #555;">
         Thank you,<br>
-        The Matura MK Team
+        The Matura Team
     </p>
     <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
         This is an automated email, please do not reply.

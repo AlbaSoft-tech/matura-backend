@@ -43,5 +43,4 @@ ${question}
   const finalAnswer = JSON5.parse(jsonStr);
   return finalAnswer;
 }
-
 export default refining;

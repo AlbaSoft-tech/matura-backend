@@ -12,7 +12,7 @@ async function finalising(input, language) {
     apiKey: process.env.GEMINI_API,
   });
   const prompt =
-    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Add an index before each question and answer each one clearly in albanian in full sentences without saying things like 'based on the text' or referencing the source. each answer should be put on a new line" +
+    "you will be given a text(optionaly), some extra information and question/s. All the answers that can be answered purely from the text, answer them from the text. If you are not 100% sure you can answer from the extra information, and if you are not 100% sure from there too, find as much information on the internet and answer the left overs. Add an index before each question and answer them concisely. Do not leave out important information, but keep each answer as short as possible.Answer them in " + language + " in full sentences without saying things like 'based on the text' or referencing the source. at the end of each answer add \\n" +
     "\n";
   const first_prompt = input;
   const topic = first_prompt.nameOfLiteraryWork;

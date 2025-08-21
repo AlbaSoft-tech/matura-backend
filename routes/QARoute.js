@@ -5,13 +5,19 @@ import Answer from "../prompt_processing/english_prompt.js";
 import CompareAnswers from "../prompt_processing/compare_answers.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
+import countTokens from "../prompt_processing/tokenizer.js";
 
 const router = express.Router();
 const API_KEY = process.env.VISION_API;
 
 router.post("/answer", async (req, res) => {
   const { prompt, type } = req.body;
-
+  const tokenCount = countTokens(prompt);
+  if (tokenCount > 10000) {
+    return res
+      .status(400)
+      .json({ message: "Prompt is too long, maximum 10000 tokens allowed." });
+  }
   try {
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
@@ -36,7 +42,7 @@ router.post("/answer", async (req, res) => {
     }
     console.log("user found");
     if (type === "photo") {
-      if (user.tokens < 10) {
+      if (user.tokens < 3) {
         return res.status(403).json({ message: "Not enough tokens" });
       }
       let answer;
@@ -47,12 +53,12 @@ router.post("/answer", async (req, res) => {
         answer = await Answer(prompt);
       }
 
-      user.tokens -= 10;
+      user.tokens -= 3;
       await user.save();
 
       return res.status(201).json({ answer });
     } else {
-      if (user.tokens < 0.5) {
+      if (user.tokens < 1) {
         return res.status(403).json({ message: "Not enough tokens" });
       }
       let answer;
@@ -68,7 +74,7 @@ router.post("/answer", async (req, res) => {
         answer = await Answer(prompt);
       }
 
-      user.tokens -= 0.5;
+      user.tokens -= 1;
       await user.save();
 
       return res.status(201).json({ answer });
@@ -125,6 +131,12 @@ router.post("/english", async (req, res) => {
 router.post("/compare-answers", async (req, res) => {
   const { prompt, index, language } = req.body;
   console.log(index, language);
+  const tokenCount = countTokens(prompt);
+  if (tokenCount > 10000) {
+    return res
+      .status(400)
+      .json({ message: "Prompt is too long, maximum 10000 tokens allowed." });
+  }
 
   try {
     if (typeof prompt !== "string" || prompt.trim() === "") {

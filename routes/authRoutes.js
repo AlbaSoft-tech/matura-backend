@@ -6,6 +6,10 @@ import testeShqip from "../tests/testeShqip.json" with { type: "json" };
 import englishTests from "../tests/englishTests.json" with { type: "json" };
 import testeMaqedonisht from "../tests/testeMaqedonisht.json" with { type: "json" };
 import testeTurqisht from "../tests/testeTurqisht.json" with { type: "json" };
+import bosnianTests from "../tests/bosnianTests.json" with { type: "json" };
+import montenegrinTests from "../tests/montenegrinTests.json" with {type: "json" };
+import serbianTests from "../tests/serbian.json" with { type: "json" };
+import bulgarianTests from "../tests/bulgarianTests.json" with { type: "json" };
 
 const router = express.Router();
 
@@ -83,6 +87,11 @@ router.post("/login", async (req, res) => {
         turkish: testeTurqisht,
         english: englishTests,
         macedonian: testeMaqedonisht,
+        montenegrin: montenegrinTests,
+        bosnian: bosnianTests,
+        serbian: serbianTests,
+        bulgarian: bulgarianTests,
+    
       }
       
     console.log("sending tests: " + tests)

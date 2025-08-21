@@ -27,13 +27,22 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
     tokens: {
-      type: Number, 
+      type: Number,
       default: 0,
     },
     completedTests: {
       type: Object,
-      default: {turkish: [], english: [], albanian: [], macedonian: []},
-    }
+      default: {
+        turkish: [],
+        english: [],
+        albanian: [],
+        macedonian: [],
+        montenegrin: [],
+        bosnian: [],
+        serbian: [],
+        bulgarian: [],
+      },
+    },
   },
   { timestamps: true }
 );
@@ -52,7 +61,10 @@ userSchema.methods.comparePassword = async function (userPassword) {
 };
 
 userSchema.methods.compareCode = async function (userCode) {
-  if (userCode == this.resetCode && new Date(Date.now()) < this.resetCodeExpires) {
+  if (
+    userCode == this.resetCode &&
+    new Date(Date.now()) < this.resetCodeExpires
+  ) {
     return true;
   }
   return false;

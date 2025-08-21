@@ -94,7 +94,7 @@ async function finalising(input, language) {
 
   const output = response.candidates[0].content.parts[0].text;
 
-  function cleanTextKeepNewlines(text) {
+  function cleanText(text) {
     return text
       .replace(/[\[\]\"\'\(\)\-\*]/g, "")
       .replace(/[ \t]+/g, " ")

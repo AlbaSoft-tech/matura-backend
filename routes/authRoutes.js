@@ -135,7 +135,7 @@ The Matura Team
 router.post("/verifyAccount", async (req, res) => {
   try {
     const {code} = req.body;
-
+    console.log(code)
     if(!code) {
       return res.status(400).json({message: "Code is required"});
     }
@@ -150,6 +150,7 @@ router.post("/verifyAccount", async (req, res) => {
     let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
 
     const tempUser = await User.findOne({ email: decoded.email });
+    console.log("found user")
 
     if(!code === tempUser.signUpCode) { return res.status(400).json({message: "Invalid code"}); }
 
@@ -161,7 +162,7 @@ router.post("/verifyAccount", async (req, res) => {
     await tempUser.save();
 
     res.status(201).json({
-      message: "User created successfully",
+      message: "User created successfully", success: true
     });
   } catch (error) {
     console.log("Error in register route", error);

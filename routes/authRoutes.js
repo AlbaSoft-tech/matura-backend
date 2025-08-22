@@ -239,6 +239,10 @@ router.post("/token", async (req, res) => {
     const email = decoded.email;
     const user = await User.findOne({ email: email });
 
+     if(user.signUpCode){
+      return res.status(400).json({message: "Please verify your email to continue"});
+    }
+
     return res
       .status(200)
       .json({

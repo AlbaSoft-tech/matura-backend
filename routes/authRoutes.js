@@ -22,6 +22,10 @@ const forgotPasswordToken = (email) => {
     expiresIn: "10m",
   });
 };
+const signUpToken = (username, email, password) => {
+  return jwt.sign({email: email, username: username, password: password}, process.env.JWT_SIGNUP_SECRET, {
+    expiresIn: "10m",})
+}
 
 router.post("/signup", async (req, res) => {
   try {
@@ -48,10 +52,113 @@ router.post("/signup", async (req, res) => {
     if (existingEmail) {
       return res.status(400).json({ message: "Email already in use" });
     }
+    const signupToken = signUpToken(username, email, password);
 
-    const user = new User({ username, email, password });
+  function getSixDigitRandom() {
+      return Math.floor(100000 + Math.random() * 900000);
+    }
+
+    const code = getSixDigitRandom();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    (async () => {
+      const info = await transporter.sendMail({
+        from: {
+          name: "Matura ",
+          address: process.env.EMAIL,
+        },
+        to: email,
+        subject: "Your accound verification code for Matura",
+        text: `Hello,
+
+Thank you for creating an account with Matura.
+
+Please use the following code to verify your email address: ${code}
+
+This code is valid for the next 10 minutes. Please return to the app and enter this code to complete your account setup.
+
+If you did not create an account, please ignore this email. Do not share this code with anyone.
+
+Thank you,
+The Matura Team
+`,
+        html: `
+<div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Email Verification</h2>
+    <p>Hello,</p>
+    <p>Thank you for signing up with Matura. To complete your account registration, please enter the following verification code in the app:</p>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+        <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
+    </div>
+    <p>This code is valid for the next 10 minutes. Please return to the app and enter this code to verify your email address.</p>
+    <p style="font-size: 0.9em; color: #777;">
+        If you did not create an account, please ignore this email. For your security, do not share this code with anyone.
+    </p>
+    <p style="margin-top: 30px; text-align: center; color: #555;">
+        Thank you,<br>
+        The Matura Team
+    </p>
+    <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
+        This is an automated email, please do not reply.
+    </p>
+</div>
+`,
+      });
+
+      console.log("Message sent");
+    })();
+
+    const user = new User({ username, email, password, signUpCode: code});
 
     await user.save();
+
+    res.status(201).json({
+      message: "User registered successfully, verify your email to continue",
+      token: signupToken,
+    });
+  } catch (error) {
+    console.log("Error in register route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/verifyAccount", async (req, res) => {
+  try {
+    const {code} = req.body;
+
+    if(!code) {
+      return res.status(400).json({message: "Code is required"});
+    }
+
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
+
+    const tempUser = await User.findOne({ email: decoded.email });
+
+    if(!code === tempUser.signUpCode) { return res.status(400).json({message: "Invalid code"}); }
+
+    const { email, username, password } = decoded;
+
+    tempUser.signUpCode = null; 
+    tempUser.expireAt = undefined;
+
+    await tempUser.save();
 
     res.status(201).json({
       message: "User created successfully",
@@ -61,6 +168,8 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
 
 router.post("/login", async (req, res) => {
   try {
@@ -76,6 +185,10 @@ router.post("/login", async (req, res) => {
     console.log("Found user");
 
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+    if(user.signUpCode){
+      return res.status(400).json({message: "Please verify your email to continue"});
+    }
 
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect)
@@ -267,6 +380,32 @@ router.post("/changePassword", async (req, res) => {
     await user.save();
 
     return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.log("Error in changePassword route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/delete", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email });
+
+if (!user) {
+  return res.status(404).json({ message: "User not found" });
+}
+
+await user.deleteOne();
+
+return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log("Error in changePassword route", error);
     res.status(500).json({ message: "Internal server error" });

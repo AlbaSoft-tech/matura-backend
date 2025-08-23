@@ -162,7 +162,7 @@ router.post("/verifyAccount", async (req, res) => {
     await tempUser.save();
 
     res.status(201).json({
-      message: "User created successfully", success: true
+      message: "User created successfully"
     });
   } catch (error) {
     console.log("Error in register route", error);

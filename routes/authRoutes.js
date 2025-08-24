@@ -421,6 +421,7 @@ return res.status(200).json({ message: "User deleted successfully" });
 router.post("/amend", async (req, res) => {
   try {
     const {info} = req.body;
+    console.log(info)
     if(!info){
       return res.status(400).json({message: "Type is required"});
     }
@@ -442,6 +443,7 @@ router.post("/amend", async (req, res) => {
       user.username = info.username;
     }
     if(info.type === "password"){
+      console.log("changing password")
       if(info.value.length < 8){
         return res.status(400).json({message: "Password must be at least 8 characters long"});
       }
@@ -456,6 +458,7 @@ router.post("/amend", async (req, res) => {
       user.password = info.newPassword;
     }
     if(info.type === "email"){
+      console.log("sending email")
       const existingEmail = await User.findOne({ email: info.value });
       if (existingEmail) {
         return res.status(400).json({ message: "Email already in use" });
@@ -465,7 +468,7 @@ router.post("/amend", async (req, res) => {
     }
 
     const code = getSixDigitRandom();
-
+    console.log(info.value)
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",

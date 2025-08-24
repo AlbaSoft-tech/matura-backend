@@ -482,7 +482,7 @@ router.post("/amend", async (req, res) => {
     });
 
     (async () => {
-      const info = await transporter.sendMail({
+      const sendEmail = await transporter.sendMail({
         from: {
           name: "Matura ",
           address: process.env.EMAIL,

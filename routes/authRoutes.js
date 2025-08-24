@@ -561,21 +561,21 @@ router.post("/verifyNewAccount", async (req, res) => {
 
     const token = authHeader.split(" ")[1];
 
-    let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const tempUser = await User.findOne({ email: decoded.email });
     console.log("found user")
 
-    if(code !== tempUser.changeEmailCode) { return res.status(400).json({message: "Invalid code"}); }
+    if(String(code) !== String(tempUser.changeEmailCode)) { return res.status(400).json({message: "Invalid code"}); }
 
     tempUser.changeEmailCode = null; 
     tempUser.expireAt = undefined;
 
     await tempUser.save();
+    const newToken = generateToken(tempUser.email);
 
     res.status(201).json({
-      message: "Email updated successfully"
-    });
+      message: "Email updated successfully", token: newToken, email: tempUser.email  });
   } catch (error) {
     console.log("Error in verifyNewAccount route", error);
     res.status(500).json({ message: "Internal server error" });

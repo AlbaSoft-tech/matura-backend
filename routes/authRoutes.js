@@ -394,6 +394,7 @@ router.post("/changePassword", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
+    console.log("deleting account")
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing authorisation header" });
@@ -535,6 +536,7 @@ The Matura Team
     
 
     await user.save();
+    return res.status(200).json({message: "User info updated successfully"});
   } catch (error)
       
    {

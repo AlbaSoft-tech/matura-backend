@@ -152,7 +152,7 @@ router.post("/verifyAccount", async (req, res) => {
     const tempUser = await User.findOne({ email: decoded.email });
     console.log("found user")
 
-    if(!code === tempUser.signUpCode) { return res.status(400).json({message: "Invalid code"}); }
+    if(code !== tempUser.signUpCode) { return res.status(400).json({message: "Invalid code"}); }
 
     tempUser.signUpCode = null; 
     tempUser.expireAt = undefined;

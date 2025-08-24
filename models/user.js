@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
+    changeEmailCode: {
+      type: Number,
+      default: null,
+    },
   },
   { timestamps: true }
 );

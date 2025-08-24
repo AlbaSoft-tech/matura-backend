@@ -78,7 +78,7 @@ router.post("/signup", async (req, res) => {
           address: process.env.EMAIL,
         },
         to: email,
-        subject: "Your accound verification code for Matura",
+        subject: "Your account verification code for Matura",
         text: `Hello,
 
 Thank you for creating an account with Matura.
@@ -127,7 +127,7 @@ The Matura Team
       token: signupToken,
     });
   } catch (error) {
-    console.log("Error in register route", error);
+    console.log("Error in Signup route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -154,8 +154,6 @@ router.post("/verifyAccount", async (req, res) => {
 
     if(!code === tempUser.signUpCode) { return res.status(400).json({message: "Invalid code"}); }
 
-    const { email, username, password } = decoded;
-
     tempUser.signUpCode = null; 
     tempUser.expireAt = undefined;
 
@@ -165,7 +163,7 @@ router.post("/verifyAccount", async (req, res) => {
       message: "User created successfully"
     });
   } catch (error) {
-    console.log("Error in register route", error);
+    console.log("Error in verifyAccount route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -357,6 +355,9 @@ router.post("/verifyCode", async (req, res) => {
     const isValidCode = await user.compareCode(code);
 
     if (!isValidCode) return res.status(401).json({ message: "Invalid code" });
+    user.resetCode = null;
+    user.resetCodeExpires = null;
+    await user.save();
 
     return res.status(200).json({ token: token, message: "Valid Token" });
   } catch (error) {
@@ -412,7 +413,166 @@ await user.deleteOne();
 
 return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.log("Error in changePassword route", error);
+    console.log("Error in delete route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/amend", async (req, res) => {
+  try {
+    const {info} = req.body;
+    if(!info){
+      return res.status(400).json({message: "Type is required"});
+    }
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email });
+
+    if(info.type === "username"){
+      if(info.value.length < 3){
+        return res.status(400).json({message: "Username must be at least 3 characters long"});
+      }
+      user.username = info.username;
+    }
+    if(info.type === "password"){
+      if(info.value.length < 8){
+        return res.status(400).json({message: "Password must be at least 8 characters long"});
+      }
+      const isSamePassword = await user.comparePassword(info.newPassword);
+      if(isSamePassword){
+        return res.status(400).json({message: "New password must be different from the old one"});
+      }
+      const correctPassword = await user.comparePassword(info.oldPassword);
+      if(!correctPassword){
+        return res.status(400).json({message: "Old password is incorrect"});
+      }
+      user.password = info.newPassword;
+    }
+    if(info.type === "email"){
+      const existingEmail = await User.findOne({ email: info.value });
+      if (existingEmail) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+        function getSixDigitRandom() {
+      return Math.floor(100000 + Math.random() * 900000);
+    }
+
+    const code = getSixDigitRandom();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    (async () => {
+      const info = await transporter.sendMail({
+        from: {
+          name: "Matura ",
+          address: process.env.EMAIL,
+        },
+        to: info.value,
+        subject: "Your account verification code for Matura",
+        text: `Hello,
+
+You have requested to change the email address associated with your Matura account.
+
+To confirm this change, please use the following code: ${code}
+
+This code is valid for the next 10 minutes. Please return to the app and enter this code to complete the email update.
+
+If you did not request to change your email address, please ignore this email. Do not share this code with anyone.
+
+Thank you,
+The Matura Team
+`,
+        html: `
+<div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Email Address Change Request</h2>
+    <p>Hello,</p>
+    <p>You have requested to change the email address associated with your Matura account. To confirm this change, please enter the following verification code in the app:</p>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+        <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
+    </div>
+    <p>This code is valid for the next 10 minutes. Please return to the app and enter this code to complete the email update.</p>
+    <p style="font-size: 0.9em; color: #777;">
+        If you did not request to change your email address, please ignore this email. For your security, do not share this code with anyone.
+    </p>
+    <p style="margin-top: 30px; text-align: center; color: #555;">
+        Thank you,<br>
+        The Matura Team
+    </p>
+    <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
+        This is an automated email, please do not reply.
+    </p>
+</div>
+`,
+      });
+
+      console.log("Message sent");
+    })();
+
+
+      user.email = info.value;
+      user.expireAt = new Date(Date.now() + 10 * 60 * 1000);
+      user.changeEmailCode = code;
+    }
+    
+
+    await user.save();
+  } catch (error)
+      
+   {
+    console.log("Error in amend route", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+
+})
+
+router.post("/verifyNewAccount", async (req, res) => {
+  try {
+    const {code} = req.body;
+    console.log(code)
+    if(!code) {
+      return res.status(400).json({message: "Code is required"});
+    }
+
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
+
+    const tempUser = await User.findOne({ email: decoded.email });
+    console.log("found user")
+
+    if(code !== tempUser.changeEmailCode) { return res.status(400).json({message: "Invalid code"}); }
+
+    tempUser.changeEmailCode = null; 
+    tempUser.expireAt = undefined;
+
+    await tempUser.save();
+
+    res.status(201).json({
+      message: "Email updated successfully"
+    });
+  } catch (error) {
+    console.log("Error in verifyNewAccount route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

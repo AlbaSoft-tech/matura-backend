@@ -437,7 +437,7 @@ router.post("/amend", async (req, res) => {
     const user = await User.findOne({ email: decoded.email });
 
     if(info.type === "username"){
-      if(info.value.length < 3){
+      if(info.username.length < 3){
         return res.status(400).json({message: "Username must be at least 3 characters long"});
       }
       user.username = info.username;

@@ -17,6 +17,12 @@ const generateToken = (email) => {
   return jwt.sign({ email: email }, process.env.JWT_SECRET);
 };
 
+const changeEmailToken = (newEmail, oldEmail) => {
+  return jwt.sign({ newEmail: newEmail, oldEmail: oldEmail }, process.env.JWT_CHANGEEMAIL_SECRET, {
+    expiresIn: "10m",
+  });
+}
+
 const forgotPasswordToken = (email) => {
   return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, {
     expiresIn: "10m",
@@ -529,14 +535,18 @@ The Matura Team
     })();
 
 
-      user.email = info.value;
-      user.expireAt = new Date(Date.now() + 10 * 60 * 1000);
       user.changeEmailCode = code;
-    }
-    
 
+    }
+
+      let emailToken;
+      if(info.type === "email"){
+        emailToken = changeEmailToken(info.value, decoded.email);
+      }
+
+    
     await user.save();
-    return res.status(200).json({message: "User info updated successfully"});
+    return res.status(200).json({message: "User info updated successfully", emailToken: emailToken} );
   } catch (error)
       
    {
@@ -561,15 +571,15 @@ router.post("/verifyNewAccount", async (req, res) => {
 
     const token = authHeader.split(" ")[1];
 
-    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
 
-    const tempUser = await User.findOne({ email: decoded.email });
+    const tempUser = await User.findOne({ email: decoded.oldEmail });
     console.log("found user")
 
     if(String(code) !== String(tempUser.changeEmailCode)) { return res.status(400).json({message: "Invalid code"}); }
 
     tempUser.changeEmailCode = null; 
-    tempUser.expireAt = undefined;
+    tempUser.email = decoded.newEmail;
 
     await tempUser.save();
     const newToken = generateToken(tempUser.email);

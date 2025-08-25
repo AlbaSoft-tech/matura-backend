@@ -470,10 +470,15 @@ router.post("/amend", async (req, res) => {
       if (existingEmail) {
         return res.status(400).json({ message: "Email already in use" });
       }
+
+       let emailToken;
+      if(info.type === "email"){
+        emailToken = changeEmailToken(info.value, decoded.email);
+      }
       if(decoded.email === "tester@example.com"){
         user.email = info.value
         await user.save()
-        return res.status(200).json({message: "Tester"})
+        return res.status(200).json({message: "Tester", emailToken: emailToken})
       }
         function getSixDigitRandom() {
       return Math.floor(100000 + Math.random() * 900000);
@@ -544,10 +549,7 @@ The Matura Team
 
     }
 
-      let emailToken;
-      if(info.type === "email"){
-        emailToken = changeEmailToken(info.value, decoded.email);
-      }
+     
 
     
     await user.save();

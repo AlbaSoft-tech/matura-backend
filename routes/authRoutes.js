@@ -570,9 +570,9 @@ router.post("/verifyNewAccount", async (req, res) => {
     }
 
     const token = authHeader.split(" ")[1];
-
+    let decoded;
     try {
-       let decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
+        decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
     } catch (error) {
       if (error.name === "TokenExpiredError") {
         return res.status(401).json({ message: "Token expired" });

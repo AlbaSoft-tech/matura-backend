@@ -43,11 +43,6 @@ const userSchema = new mongoose.Schema(
         bulgarian: [],
       },
     },
-    expireAt: {
-      type: Date,
-      default: () => new Date(Date.now() + 10 * 60 * 1000), 
-      index: { expires: 0 }, 
-    },
     signUpCode: {
       type: Number,
       default: null,

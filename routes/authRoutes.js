@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/user.js";
+import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import testeShqip from "../tests/testeShqip.json" with { type: "json" };
@@ -124,7 +125,7 @@ The Matura Team
       console.log("Message sent");
     })();
 
-    const user = new User({ username, email, password, signUpCode: code});
+    const user = new TempUser({ email, signUpCode: code});
 
     await user.save();
 
@@ -155,15 +156,14 @@ router.post("/verifyAccount", async (req, res) => {
 
     let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
 
-    const tempUser = await User.findOne({ email: decoded.email });
+    const tempUser = await TempUser.findOne({ email: decoded.email });
     console.log("found user")
 
     if((String(code) !== String(tempUser.signUpCode))) { return res.status(400).json({message: "Invalid code"}); }
 
-    tempUser.signUpCode = null; 
-    tempUser.expireAt = undefined;
+    const user = new User ({email: decoded.email, username: decoded.username, password: decoded.password});
 
-    await tempUser.save();
+    await user.save();
 
     res.status(201).json({
       message: "User created successfully"

@@ -472,13 +472,15 @@ router.post("/amend", async (req, res) => {
       }
 
        let emailToken;
+       let token;
       if(info.type === "email"){
         emailToken = changeEmailToken(info.value, decoded.email);
+        token = generateToken(info.value)
       }
       if(decoded.email === "tester@example.com"){
         user.email = info.value
         await user.save()
-        return res.status(200).json({message: "Tester", emailToken: emailToken})
+        return res.status(200).json({message: "Tester", emailToken: emailToken, token:token})
       }
         function getSixDigitRandom() {
       return Math.floor(100000 + Math.random() * 900000);

@@ -571,10 +571,25 @@ router.post("/verifyNewAccount", async (req, res) => {
 
     const token = authHeader.split(" ")[1];
 
-    let decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
+    try {
+       let decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Token expired" });
+      } else if (error.name === "JsonWebTokenError") {
+        return res.status(401).json({ message: "Invalid token" });
+      } else {
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    }
+
+   
 
     const tempUser = await User.findOne({ email: decoded.oldEmail });
     console.log("found user")
+    if (!tempUser) {
+  return res.status(404).json({ message: "User not found" });
+}
 
     if(String(code) !== String(tempUser.changeEmailCode)) { return res.status(400).json({message: "Invalid code"}); }
 

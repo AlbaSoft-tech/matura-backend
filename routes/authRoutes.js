@@ -448,6 +448,7 @@ router.post("/amend", async (req, res) => {
         return res.status(400).json({message: "Username must be at least 3 characters long"});
       }
       user.username = info.username;
+      return res.status(200).json({message: "Username changed successfully"})
     }
     if(info.type === "password"){
       console.log("changing password")
@@ -463,6 +464,7 @@ router.post("/amend", async (req, res) => {
         return res.status(400).json({message: "Old password is incorrect"});
       }
       user.password = info.newPassword;
+      return res.status(200).json({message: "Password changed successfully"})
     }
     if(info.type === "email"){
       console.log("sending email")

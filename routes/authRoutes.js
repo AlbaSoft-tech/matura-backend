@@ -451,7 +451,7 @@ router.post("/amend", async (req, res) => {
     }
     if(info.type === "password"){
       console.log("changing password")
-      if(info.value.length < 8){
+      if(info.newPassword.length < 8){
         return res.status(400).json({message: "Password must be at least 8 characters long"});
       }
       const isSamePassword = await user.comparePassword(info.newPassword);

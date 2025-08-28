@@ -255,6 +255,9 @@ router.post("/token", async (req, res) => {
         completedTests: user.completedTests,
         testUnlocked: user.testUnlocked,
         tokens: user.tokens,
+        user: user.username,
+        email: user.email,
+        
       });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {

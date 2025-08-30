@@ -247,13 +247,23 @@ router.post("/token", async (req, res) => {
      if(user.signUpCode){
       return res.status(400).json({message: "Please verify your email to continue"});
     }
-
+    const tests = {
+        albanian: testeShqip,
+        turkish: testeTurqisht,
+        english: englishTests,
+        macedonian: testeMaqedonisht,
+        montenegrin: montenegrinTests,
+        bosnian: bosnianTests,
+        serbian: serbianTests,
+        bulgarian: bulgarianTests,
+    
+      }
     return res
       .status(200)
       .json({
         message: "Authorised",
         completedTests: user.completedTests,
-        testUnlocked: user.testUnlocked,
+        tests: tests,
         tokens: user.tokens,
         user: user.username,
         email: user.email,

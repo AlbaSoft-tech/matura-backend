@@ -220,7 +220,6 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         tokens: user.tokens,
-        testUnlocked: user.testUnlocked,
         completedTests: user.completedTests,
       },
       tests: tests,

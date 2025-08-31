@@ -7,28 +7,28 @@ import fs from "fs";
 import path from "path";
 
 const testeShqip = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/testeShqip.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/testeShqip.json"), "utf-8")
 );
 const englishTests = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/englishTests.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/englishTests.json"), "utf-8")
 );
 const testeMaqedonisht = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/testeMaqedonisht.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/testeMaqedonisht.json"), "utf-8")
 );
 const testeTurqisht = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/testeTurqisht.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/testeTurqisht.json"), "utf-8")
 );
 const bosnianTests = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/bosnian.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/bosnian.json"), "utf-8")
 );
 const montenegrinTests = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/montenegrin.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/montenegrin.json"), "utf-8")
 );
 const serbianTests = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/serbian.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/serbian.json"), "utf-8")
 );
 const bulgarianTests = JSON.parse(
-  fs.readFileSync(path.resolve("./src/tests/bulgarian.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/bulgarian.json"), "utf-8")
 );
 
 const router = express.Router();

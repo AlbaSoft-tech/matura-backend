@@ -3,14 +3,14 @@ import User from "../models/user.js";
 import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import testeShqip from "../tests/testeShqip.json" with { type: "json" };
-import englishTests from "../tests/englishTests.json" with { type: "json" };
-import testeMaqedonisht from "../tests/testeMaqedonisht.json" with { type: "json" };
-import testeTurqisht from "../tests/testeTurqisht.json" with { type: "json" };
-import bosnianTests from "../tests/bosnian.json" with { type: "json" };
-import montenegrinTests from "../tests/montenegrin.json" with {type: "json" };
-import serbianTests from "../tests/serbian.json" with { type: "json" };
-import bulgarianTests from "../tests/bulgarian.json" with { type: "json" };
+import testeShqip from "../tests/testeShqip.json";
+import englishTests from "../tests/englishTests.json";
+import testeMaqedonisht from "../tests/testeMaqedonisht.json";
+import testeTurqisht from "../tests/testeTurqisht.json";
+import bosnianTests from "../tests/bosnian.json";
+import montenegrinTests from "../tests/montenegrin.json";
+import serbianTests from "../tests/serbian.json";
+import bulgarianTests from "../tests/bulgarian.json";
 
 const router = express.Router();
 
@@ -19,10 +19,14 @@ const generateToken = (email) => {
 };
 
 const changeEmailToken = (newEmail, oldEmail) => {
-  return jwt.sign({ newEmail: newEmail, oldEmail: oldEmail }, process.env.JWT_CHANGEEMAIL_SECRET, {
-    expiresIn: "10m",
-  });
-}
+  return jwt.sign(
+    { newEmail: newEmail, oldEmail: oldEmail },
+    process.env.JWT_CHANGEEMAIL_SECRET,
+    {
+      expiresIn: "10m",
+    }
+  );
+};
 
 const forgotPasswordToken = (email) => {
   return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, {
@@ -30,9 +34,14 @@ const forgotPasswordToken = (email) => {
   });
 };
 const signUpToken = (username, email, password) => {
-  return jwt.sign({email: email, username: username, password: password}, process.env.JWT_SIGNUP_SECRET, {
-    expiresIn: "10m",})
-}
+  return jwt.sign(
+    { email: email, username: username, password: password },
+    process.env.JWT_SIGNUP_SECRET,
+    {
+      expiresIn: "10m",
+    }
+  );
+};
 
 router.post("/signup", async (req, res) => {
   try {
@@ -61,7 +70,7 @@ router.post("/signup", async (req, res) => {
     }
     const signupToken = signUpToken(username, email, password);
 
-  function getSixDigitRandom() {
+    function getSixDigitRandom() {
       return Math.floor(100000 + Math.random() * 900000);
     }
 
@@ -125,7 +134,7 @@ The Matura Team
       console.log("Message sent");
     })();
 
-    const user = new TempUser({ email, signUpCode: code});
+    const user = new TempUser({ email, signUpCode: code });
 
     await user.save();
 
@@ -141,10 +150,10 @@ The Matura Team
 
 router.post("/verifyAccount", async (req, res) => {
   try {
-    const {code} = req.body;
-    console.log(code)
-    if(!code) {
-      return res.status(400).json({message: "Code is required"});
+    const { code } = req.body;
+    console.log(code);
+    if (!code) {
+      return res.status(400).json({ message: "Code is required" });
     }
 
     const authHeader = req.headers["authorization"];
@@ -157,24 +166,28 @@ router.post("/verifyAccount", async (req, res) => {
     let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
 
     const tempUser = await TempUser.findOne({ email: decoded.email });
-    console.log("found user")
+    console.log("found user");
 
-    if((String(code) !== String(tempUser.signUpCode))) { return res.status(400).json({message: "Invalid code"}); }
+    if (String(code) !== String(tempUser.signUpCode)) {
+      return res.status(400).json({ message: "Invalid code" });
+    }
 
-    const user = new User ({email: decoded.email, username: decoded.username, password: decoded.password});
+    const user = new User({
+      email: decoded.email,
+      username: decoded.username,
+      password: decoded.password,
+    });
 
     await user.save();
 
     res.status(201).json({
-      message: "User created successfully"
+      message: "User created successfully",
     });
   } catch (error) {
     console.log("Error in verifyAccount route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
 
 router.post("/login", async (req, res) => {
   try {
@@ -191,8 +204,10 @@ router.post("/login", async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    if(user.signUpCode){
-      return res.status(400).json({message: "Please verify your email to continue"});
+    if (user.signUpCode) {
+      return res
+        .status(400)
+        .json({ message: "Please verify your email to continue" });
     }
 
     const isPasswordCorrect = await user.comparePassword(password);
@@ -201,18 +216,17 @@ router.post("/login", async (req, res) => {
 
     const token = generateToken(email);
     const tests = {
-        albanian: testeShqip,
-        turkish: testeTurqisht,
-        english: englishTests,
-        macedonian: testeMaqedonisht,
-        montenegrin: montenegrinTests,
-        bosnian: bosnianTests,
-        serbian: serbianTests,
-        bulgarian: bulgarianTests,
-    
-      }
-      
-    console.log("sending tests: " + tests)
+      albanian: testeShqip,
+      turkish: testeTurqisht,
+      english: englishTests,
+      macedonian: testeMaqedonisht,
+      montenegrin: montenegrinTests,
+      bosnian: bosnianTests,
+      serbian: serbianTests,
+      bulgarian: bulgarianTests,
+    };
+
+    console.log("sending tests: " + tests);
 
     res.status(200).json({
       token,
@@ -243,31 +257,29 @@ router.post("/token", async (req, res) => {
     const email = decoded.email;
     const user = await User.findOne({ email: email });
 
-     if(user.signUpCode){
-      return res.status(400).json({message: "Please verify your email to continue"});
+    if (user.signUpCode) {
+      return res
+        .status(400)
+        .json({ message: "Please verify your email to continue" });
     }
     const tests = {
-        albanian: testeShqip,
-        turkish: testeTurqisht,
-        english: englishTests,
-        macedonian: testeMaqedonisht,
-        montenegrin: montenegrinTests,
-        bosnian: bosnianTests,
-        serbian: serbianTests,
-        bulgarian: bulgarianTests,
-    
-      }
-    return res
-      .status(200)
-      .json({
-        message: "Authorised",
-        completedTests: user.completedTests,
-        tests: tests,
-        tokens: user.tokens,
-        user: user.username,
-        email: user.email,
-        
-      });
+      albanian: testeShqip,
+      turkish: testeTurqisht,
+      english: englishTests,
+      macedonian: testeMaqedonisht,
+      montenegrin: montenegrinTests,
+      bosnian: bosnianTests,
+      serbian: serbianTests,
+      bulgarian: bulgarianTests,
+    };
+    return res.status(200).json({
+      message: "Authorised",
+      completedTests: user.completedTests,
+      tests: tests,
+      tokens: user.tokens,
+      user: user.username,
+      email: user.email,
+    });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token" });
@@ -412,7 +424,7 @@ router.post("/changePassword", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
-    console.log("deleting account")
+    console.log("deleting account");
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ message: "Missing authorisation header" });
@@ -424,14 +436,13 @@ router.post("/delete", async (req, res) => {
 
     const user = await User.findOne({ email: decoded.email });
 
-if (!user) {
-  return res.status(404).json({ message: "User not found" });
-}
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    await user.deleteOne();
 
-await user.deleteOne();
-
-return res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log("Error in delete route", error);
     res.status(500).json({ message: "Internal server error" });
@@ -440,10 +451,10 @@ return res.status(200).json({ message: "User deleted successfully" });
 
 router.post("/amend", async (req, res) => {
   try {
-    const {info} = req.body;
-    console.log(info)
-    if(!info){
-      return res.status(400).json({message: "Type is required"});
+    const { info } = req.body;
+    console.log(info);
+    if (!info) {
+      return res.status(400).json({ message: "Type is required" });
     }
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
@@ -456,75 +467,83 @@ router.post("/amend", async (req, res) => {
 
     const user = await User.findOne({ email: decoded.email });
 
-    if(info.type === "username"){
-      if(info.username.length < 3){
-        return res.status(400).json({message: "Username must be at least 3 characters long"});
+    if (info.type === "username") {
+      if (info.username.length < 3) {
+        return res
+          .status(400)
+          .json({ message: "Username must be at least 3 characters long" });
       }
       user.username = info.username;
-      await user.save()
-      return res.status(200).json({message: "Username changed successfully"})
+      await user.save();
+      return res.status(200).json({ message: "Username changed successfully" });
     }
-    if(info.type === "password"){
-      console.log("changing password")
-      if(info.newPassword.length < 8){
-        return res.status(400).json({message: "Password must be at least 8 characters long"});
+    if (info.type === "password") {
+      console.log("changing password");
+      if (info.newPassword.length < 8) {
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 8 characters long" });
       }
       const isSamePassword = await user.comparePassword(info.newPassword);
-      if(isSamePassword){
-        return res.status(400).json({message: "New password must be different from the old one"});
+      if (isSamePassword) {
+        return res
+          .status(400)
+          .json({ message: "New password must be different from the old one" });
       }
       const correctPassword = await user.comparePassword(info.oldPassword);
-      if(!correctPassword){
-        return res.status(400).json({message: "Old password is incorrect"});
+      if (!correctPassword) {
+        return res.status(400).json({ message: "Old password is incorrect" });
       }
       user.password = info.newPassword;
-      await user.save()
-      return res.status(200).json({message: "Password changed successfully"})
+      await user.save();
+      return res.status(200).json({ message: "Password changed successfully" });
     }
-    if(info.type === "email"){
-      console.log("sending email")
+    if (info.type === "email") {
+      console.log("sending email");
       const existingEmail = await User.findOne({ email: info.value });
       if (existingEmail) {
         return res.status(400).json({ message: "Email already in use" });
       }
 
-       let emailToken;
-       let token;
-      if(info.type === "email"){
-        emailToken = changeEmailToken(info.value, decoded.email);
-        token = generateToken(info.value)
-      }
-      if(decoded.email === "tester@example.com"){
-        user.email = info.value
-        await user.save()
-        return res.status(200).json({message: "Tester", emailToken: emailToken, token:token})
-      }
-        function getSixDigitRandom() {
-      return Math.floor(100000 + Math.random() * 900000);
-    }
+      let emailToken;
+      let token;
 
-    const code = getSixDigitRandom();
-    console.log(info.value)
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+      emailToken = changeEmailToken(info.value, decoded.email);
+      token = generateToken(info.value);
 
-    (async () => {
-      const sendEmail = await transporter.sendMail({
-        from: {
-          name: "Matura ",
-          address: process.env.EMAIL,
+      if (decoded.email === "tester@example.com") {
+        user.email = info.value;
+        await user.save();
+        return res
+          .status(200)
+          .json({ message: "Tester", emailToken: emailToken, token: token });
+      }
+      function getSixDigitRandom() {
+        return Math.floor(100000 + Math.random() * 900000);
+      }
+
+      const code = getSixDigitRandom();
+      console.log(info.value);
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
         },
-        to: info.value,
-        subject: "Your account verification code for Matura",
-        text: `Hello,
+      });
+
+      (async () => {
+        const sendEmail = await transporter.sendMail({
+          from: {
+            name: "Matura ",
+            address: process.env.EMAIL,
+          },
+          to: info.value,
+          subject: "Your account verification code for Matura",
+          text: `Hello,
 
 You have requested to change the email address associated with your Matura account.
 
@@ -537,7 +556,7 @@ If you did not request to change your email address, please ignore this email. D
 Thank you,
 The Matura Team
 `,
-        html: `
+          html: `
 <div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
     <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Email Address Change Request</h2>
     <p>Hello,</p>
@@ -558,36 +577,33 @@ The Matura Team
     </p>
 </div>
 `,
-      });
+        });
 
-      console.log("Message sent");
-    })();
-
+        console.log("Message sent");
+      })();
 
       user.changeEmailCode = code;
-
     }
 
-     
-
-    
     await user.save();
-    return res.status(200).json({message: "User info updated successfully", emailToken: emailToken} );
-  } catch (error)
-      
-   {
+    return res
+      .status(200)
+      .json({
+        message: "User info updated successfully",
+        emailToken: emailToken,
+      });
+  } catch (error) {
     console.log("Error in amend route", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-
-})
+});
 
 router.post("/verifyNewAccount", async (req, res) => {
   try {
-    const {code} = req.body;
-    console.log(code)
-    if(!code) {
-      return res.status(400).json({message: "Code is required"});
+    const { code } = req.body;
+    console.log(code);
+    if (!code) {
+      return res.status(400).json({ message: "Code is required" });
     }
 
     const authHeader = req.headers["authorization"];
@@ -598,7 +614,7 @@ router.post("/verifyNewAccount", async (req, res) => {
     const token = authHeader.split(" ")[1];
     let decoded;
     try {
-        decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
+      decoded = jwt.verify(token, process.env.JWT_CHANGEEMAIL_SECRET);
     } catch (error) {
       if (error.name === "TokenExpiredError") {
         return res.status(401).json({ message: "Token expired" });
@@ -609,24 +625,27 @@ router.post("/verifyNewAccount", async (req, res) => {
       }
     }
 
-   
-
     const tempUser = await User.findOne({ email: decoded.oldEmail });
-    console.log("found user")
+    console.log("found user");
     if (!tempUser) {
-  return res.status(404).json({ message: "User not found" });
-}
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    if(String(code) !== String(tempUser.changeEmailCode)) { return res.status(400).json({message: "Invalid code"}); }
+    if (String(code) !== String(tempUser.changeEmailCode)) {
+      return res.status(400).json({ message: "Invalid code" });
+    }
 
-    tempUser.changeEmailCode = null; 
+    tempUser.changeEmailCode = null;
     tempUser.email = decoded.newEmail;
 
     await tempUser.save();
     const newToken = generateToken(tempUser.email);
 
     res.status(201).json({
-      message: "Email updated successfully", token: newToken, email: tempUser.email  });
+      message: "Email updated successfully",
+      token: newToken,
+      email: tempUser.email,
+    });
   } catch (error) {
     console.log("Error in verifyNewAccount route", error);
     res.status(500).json({ message: "Internal server error" });

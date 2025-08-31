@@ -3,15 +3,33 @@ import User from "../models/user.js";
 import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import testeShqip from "../tests/testeShqip.json" assert { type: "json" };
-import englishTests from "../tests/englishTests.json" assert { type: "json" };
-import testeMaqedonisht from "../tests/testeMaqedonisht.json" assert { type: "json" };
-import testeTurqisht from "../tests/testeTurqisht.json" assert { type: "json" };
-import bosnianTests from "../tests/bosnian.json" assert { type: "json" };
-import montenegrinTests from "../tests/montenegrin.json" assert { type: "json" };
-import serbianTests from "../tests/serbian.json" assert { type: "json" };
-import bulgarianTests from "../tests/bulgarian.json" assert { type: "json" };
+import fs from "fs";
+import path from "path";
 
+const testeShqip = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/testeShqip.json"), "utf-8")
+);
+const englishTests = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/englishTests.json"), "utf-8")
+);
+const testeMaqedonisht = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/testeMaqedonisht.json"), "utf-8")
+);
+const testeTurqisht = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/testeTurqisht.json"), "utf-8")
+);
+const bosnianTests = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/bosnian.json"), "utf-8")
+);
+const montenegrinTests = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/montenegrin.json"), "utf-8")
+);
+const serbianTests = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/serbian.json"), "utf-8")
+);
+const bulgarianTests = JSON.parse(
+  fs.readFileSync(path.resolve("./src/tests/bulgarian.json"), "utf-8")
+);
 
 const router = express.Router();
 
@@ -587,12 +605,10 @@ The Matura Team
     }
 
     await user.save();
-    return res
-      .status(200)
-      .json({
-        message: "User info updated successfully",
-        emailToken: emailToken,
-      });
+    return res.status(200).json({
+      message: "User info updated successfully",
+      emailToken: emailToken,
+    });
   } catch (error) {
     console.log("Error in amend route", error);
     return res.status(500).json({ message: "Internal server error" });

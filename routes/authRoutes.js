@@ -3,14 +3,15 @@ import User from "../models/user.js";
 import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import testeShqip from "../tests/testeShqip.json";
-import englishTests from "../tests/englishTests.json";
-import testeMaqedonisht from "../tests/testeMaqedonisht.json";
-import testeTurqisht from "../tests/testeTurqisht.json";
-import bosnianTests from "../tests/bosnian.json";
-import montenegrinTests from "../tests/montenegrin.json";
-import serbianTests from "../tests/serbian.json";
-import bulgarianTests from "../tests/bulgarian.json";
+import testeShqip from "../tests/testeShqip.json" assert { type: "json" };
+import englishTests from "../tests/englishTests.json" assert { type: "json" };
+import testeMaqedonisht from "../tests/testeMaqedonisht.json" assert { type: "json" };
+import testeTurqisht from "../tests/testeTurqisht.json" assert { type: "json" };
+import bosnianTests from "../tests/bosnian.json" assert { type: "json" };
+import montenegrinTests from "../tests/montenegrin.json" assert { type: "json" };
+import serbianTests from "../tests/serbian.json" assert { type: "json" };
+import bulgarianTests from "../tests/bulgarian.json" assert { type: "json" };
+
 
 const router = express.Router();
 

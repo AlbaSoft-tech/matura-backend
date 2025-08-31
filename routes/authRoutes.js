@@ -471,6 +471,7 @@ router.post("/delete", async (req, res) => {
 router.post("/amend", async (req, res) => {
   try {
     const { info } = req.body;
+
     console.log(info);
     if (!info) {
       return res.status(400).json({ message: "Type is required" });
@@ -524,11 +525,8 @@ router.post("/amend", async (req, res) => {
         return res.status(400).json({ message: "Email already in use" });
       }
 
-      let emailToken;
-      let token;
-
-      emailToken = changeEmailToken(info.value, decoded.email);
-      token = generateToken(info.value);
+      const emailToken = changeEmailToken(info.value, decoded.email);
+      const token = generateToken(info.value);
 
       if (decoded.email === "tester@example.com") {
         user.email = info.value;
@@ -602,13 +600,12 @@ The Matura Team
       })();
 
       user.changeEmailCode = code;
+      await user.save();
+      return res.status(200).json({
+        message: "User info updated successfully",
+        emailToken: emailToken,
+      });
     }
-
-    await user.save();
-    return res.status(200).json({
-      message: "User info updated successfully",
-      emailToken: emailToken,
-    });
   } catch (error) {
     console.log("Error in amend route", error);
     return res.status(500).json({ message: "Internal server error" });

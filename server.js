@@ -17,6 +17,7 @@ app.use(
         "http://localhost:8081",
         "http://localhost:5173",
         "https://matura-web.vercel.app",
+        "https://matura-delete-account.vercel.app/"
       ];
 
       if (allowedOrigins.includes(origin) || !origin) {

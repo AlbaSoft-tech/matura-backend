@@ -34,12 +34,12 @@ const bulgarianTests = JSON.parse(
 const router = express.Router();
 
 const generateToken = (email) => {
-  return jwt.sign({ email: email }, process.env.JWT_SECRET);
+  return jwt.sign({ email: email.toLowerCase() }, process.env.JWT_SECRET);
 };
 
 const changeEmailToken = (newEmail, oldEmail) => {
   return jwt.sign(
-    { newEmail: newEmail, oldEmail: oldEmail },
+    { newEmail: newEmail.toLowerCase(), oldEmail: oldEmail.toLowerCase() },
     process.env.JWT_CHANGEEMAIL_SECRET,
     {
       expiresIn: "10m",
@@ -48,13 +48,17 @@ const changeEmailToken = (newEmail, oldEmail) => {
 };
 
 const forgotPasswordToken = (email) => {
-  return jwt.sign({ email: email }, process.env.JWT_FORGOT_SECRET, {
-    expiresIn: "10m",
-  });
+  return jwt.sign(
+    { email: email.toLowerCase() },
+    process.env.JWT_FORGOT_SECRET,
+    {
+      expiresIn: "10m",
+    }
+  );
 };
 const signUpToken = (username, email, password) => {
   return jwt.sign(
-    { email: email, username: username, password: password },
+    { email: email.toLowerCase(), username: username, password: password },
     process.env.JWT_SIGNUP_SECRET,
     {
       expiresIn: "10m",
@@ -82,12 +86,12 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Username must be at least 3 characters long" });
     }
 
-    const existingEmail = await User.findOne({ email: email });
+    const existingEmail = await User.findOne({ email: email.toLowerCase() });
 
     if (existingEmail) {
       return res.status(400).json({ message: "Email already in use" });
     }
-    const signupToken = signUpToken(username, email, password);
+    const signupToken = signUpToken(username, email.toLowerCase(), password);
 
     function getSixDigitRandom() {
       return Math.floor(100000 + Math.random() * 900000);
@@ -112,7 +116,7 @@ router.post("/signup", async (req, res) => {
           name: "Matura ",
           address: process.env.EMAIL,
         },
-        to: email,
+        to: email.toLowerCase(),
         subject: "Your account verification code for Matura",
         text: `Hello,
 
@@ -153,7 +157,7 @@ The Matura Team
       console.log("Message sent");
     })();
 
-    const user = new TempUser({ email, signUpCode: code });
+    const user = new TempUser({ email: email.toLowerCase(), signUpCode: code });
 
     await user.save();
 
@@ -184,7 +188,9 @@ router.post("/verifyAccount", async (req, res) => {
 
     let decoded = jwt.verify(token, process.env.JWT_SIGNUP_SECRET);
 
-    const tempUser = await TempUser.findOne({ email: decoded.email });
+    const tempUser = await TempUser.findOne({
+      email: decoded.email.toLowerCase(),
+    });
     console.log("found user");
 
     if (String(code) !== String(tempUser.signUpCode)) {
@@ -192,7 +198,7 @@ router.post("/verifyAccount", async (req, res) => {
     }
 
     const user = new User({
-      email: decoded.email,
+      email: decoded.email.toLowerCase(),
       username: decoded.username,
       password: decoded.password,
     });
@@ -217,7 +223,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "All fields required" });
     }
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     console.log("Found user");
 
@@ -251,7 +257,7 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         username: user.username,
-        email: user.email,
+        email: user.email.toLowerCase(),
         tokens: user.tokens,
         completedTests: user.completedTests,
       },
@@ -273,8 +279,8 @@ router.post("/token", async (req, res) => {
     const token = authHeader.split(" ")[1];
 
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const email = decoded.email;
-    const user = await User.findOne({ email: email });
+    const email = decoded.email.toLowerCase();
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     if (user.signUpCode) {
       return res
@@ -297,7 +303,7 @@ router.post("/token", async (req, res) => {
       tests: tests,
       tokens: user.tokens,
       user: user.username,
-      email: user.email,
+      email: user.email.toLowerCase(),
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
@@ -315,7 +321,7 @@ router.post("/forgotPassword", async (req, res) => {
     }
 
     const code = getSixDigitRandom();
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -341,7 +347,7 @@ router.post("/forgotPassword", async (req, res) => {
           name: "Matura ",
           address: process.env.EMAIL,
         },
-        to: email,
+        to: email.toLowerCase(),
         subject: "Your Password Reset Code for Matura",
         text: `Hello,
 
@@ -393,7 +399,7 @@ router.post("/verifyCode", async (req, res) => {
   try {
     const { code, email } = req.body;
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return res.status(401).json({ message: "Invalid code or email." });
@@ -428,7 +434,7 @@ router.post("/changePassword", async (req, res) => {
 
     let decoded = jwt.verify(token, process.env.JWT_FORGOT_SECRET);
 
-    const user = await User.findOne({ email: decoded.email });
+    const user = await User.findOne({ email: decoded.email.toLowerCase() });
     user.$set({
       password: newPassword,
     });
@@ -453,7 +459,7 @@ router.post("/delete", async (req, res) => {
 
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findOne({ email: decoded.email });
+    const user = await User.findOne({ email: decoded.email.toLowerCase() });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -485,7 +491,7 @@ router.post("/amend", async (req, res) => {
 
     let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findOne({ email: decoded.email });
+    const user = await User.findOne({ email: decoded.email.toLowerCase() });
 
     if (info.type === "username") {
       if (info.username.length < 3) {
@@ -520,12 +526,17 @@ router.post("/amend", async (req, res) => {
     }
     if (info.type === "email") {
       console.log("sending email");
-      const existingEmail = await User.findOne({ email: info.value });
+      const existingEmail = await User.findOne({
+        email: info.value.toLowerCase(),
+      });
       if (existingEmail) {
         return res.status(400).json({ message: "Email already in use" });
       }
 
-      const emailToken = changeEmailToken(info.value, decoded.email);
+      const emailToken = changeEmailToken(
+        info.value.toLowerCase(),
+        decoded.email.toLowerCase()
+      );
       const token = generateToken(info.value);
 
       if (decoded.email === "tester@example.com") {
@@ -558,7 +569,7 @@ router.post("/amend", async (req, res) => {
             name: "Matura ",
             address: process.env.EMAIL,
           },
-          to: info.value,
+          to: info.value.toLowerCase(),
           subject: "Your account verification code for Matura",
           text: `Hello,
 
@@ -639,7 +650,9 @@ router.post("/verifyNewAccount", async (req, res) => {
       }
     }
 
-    const tempUser = await User.findOne({ email: decoded.oldEmail });
+    const tempUser = await User.findOne({
+      email: decoded.oldEmail.toLowerCase(),
+    });
     console.log("found user");
     if (!tempUser) {
       return res.status(404).json({ message: "User not found" });
@@ -650,15 +663,15 @@ router.post("/verifyNewAccount", async (req, res) => {
     }
 
     tempUser.changeEmailCode = null;
-    tempUser.email = decoded.newEmail;
+    tempUser.email = decoded.newEmail.toLowerCase();
 
     await tempUser.save();
-    const newToken = generateToken(tempUser.email);
+    const newToken = generateToken(tempUser.email.toLowerCase());
 
     res.status(201).json({
       message: "Email updated successfully",
       token: newToken,
-      email: tempUser.email,
+      email: tempUser.email.toLowerCase(),
     });
   } catch (error) {
     console.log("Error in verifyNewAccount route", error);
@@ -669,7 +682,7 @@ router.post("/deleteLink", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

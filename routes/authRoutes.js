@@ -260,6 +260,7 @@ router.post("/login", async (req, res) => {
         email: user.email.toLowerCase(),
         tokens: user.tokens,
         completedTests: user.completedTests,
+        id: user._id,
       },
       tests: tests,
     });
@@ -304,6 +305,7 @@ router.post("/token", async (req, res) => {
       tokens: user.tokens,
       user: user.username,
       email: user.email.toLowerCase(),
+      id: user._id,
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
@@ -697,6 +699,37 @@ router.post("/deleteLink", async (req, res) => {
     return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     console.log("Error in delete route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+router.post("/revenueCat", async (req, res) => {
+  try {
+    const { event } = req.body.event;
+    console.log(event);
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+    console.log(authHeader, process.env.REVENUECAT);
+    if(authHeader!==process.env.REVENUECAT){
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    const userId = event.app_user_id;
+    const productId = event.product_id;
+
+    let tokensToAdd = 0;
+    if (productId === "10_matura_tokens") tokensToAdd = 10;
+    if (productId === "50_matura_tokens") tokensToAdd = 50;
+    if (productId === "100_matura_tokens") tokensToAdd = 100;
+
+    const user = await User.findById(userId)
+
+    user.tokens += tokensToAdd;
+    await user.save()
+    return res.status(200).json({ message: "Tokens added successfully" });
+
+  } catch (error) {
+    console.log("Error in revenueCat route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

@@ -260,7 +260,7 @@ router.post("/login", async (req, res) => {
         email: user.email.toLowerCase(),
         tokens: user.tokens,
         completedTests: user.completedTests,
-        id: user._id,
+        id: user._id.toString(),
       },
       tests: tests,
     });
@@ -305,7 +305,7 @@ router.post("/token", async (req, res) => {
       tokens: user.tokens,
       user: user.username,
       email: user.email.toLowerCase(),
-      id: user._id,
+      id: user._id.toString(),
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError") {

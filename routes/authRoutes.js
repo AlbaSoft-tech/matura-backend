@@ -711,7 +711,7 @@ router.post("/revenueCat", async (req, res) => {
       return res.status(401).json({ message: "Missing authorisation header" });
     }
     console.log(authHeader, process.env.REVENUECAT);
-    if(authHeader!==process.env.REVENUECAT){
+    if (authHeader !== process.env.REVENUECAT) {
       return res.status(403).json({ message: "Forbidden" });
     }
     const userId = event.app_user_id;
@@ -722,14 +722,33 @@ router.post("/revenueCat", async (req, res) => {
     if (productId === "50_matura_tokens") tokensToAdd = 50;
     if (productId === "100_matura_tokens") tokensToAdd = 100;
 
-    const user = await User.findById(userId)
+    const user = await User.findById(userId);
 
     user.tokens += tokensToAdd;
-    await user.save()
+    await user.save();
     return res.status(200).json({ message: "Tokens added successfully" });
-
   } catch (error) {
     console.log("Error in revenueCat route", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/getTokens", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ email: decoded.email.toLowerCase() });
+
+    return res.status(200).json({tokens: user.tokens, message: "Tokens taken successfully" });
+  } catch (error) {
+    console.log("Error in getTokens route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

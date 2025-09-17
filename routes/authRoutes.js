@@ -759,7 +759,7 @@ router.post("/revenueCat", async (req, res) => {
     return res.status(200).json({ message: "Tokens added successfully" });
   } catch (error) {
     console.log("Error in revenueCat route", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error.message });
   }
 });
 

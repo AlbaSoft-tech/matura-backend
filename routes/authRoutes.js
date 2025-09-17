@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import { clear } from "console";
 
 const testeShqip = JSON.parse(
   fs.readFileSync(path.resolve("./tests/testeShqip.json"), "utf-8")
@@ -702,6 +703,26 @@ router.post("/deleteLink", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+const sseConnections = {};
+
+router.get("/user/:userId/updates", (req, res) => {
+  const { userId } = req.params;
+
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+
+  sseConnections[userId] = res;
+
+  req.on("close", () => {
+    delete sseConnections[userId];
+    console.log(`Client ${userId} disconnected from SSE.`);
+  });
+});
+
 router.post("/revenueCat", async (req, res) => {
   try {
     const { event } = req.body.event;
@@ -726,29 +747,18 @@ router.post("/revenueCat", async (req, res) => {
 
     user.tokens += tokensToAdd;
     await user.save();
+
+    const newTokens = user.tokens;
+
+    if (sseConnections[userId]) {
+      sseConnections[userId].write(
+        `data: ${JSON.stringify({ tokens: newTokens })}\n\n`
+      );
+    }
+
     return res.status(200).json({ message: "Tokens added successfully" });
   } catch (error) {
     console.log("Error in revenueCat route", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-router.post("/getTokens", async (req, res) => {
-  try {
-    const authHeader = req.headers["authorization"];
-    if (!authHeader) {
-      return res.status(401).json({ message: "Missing authorisation header" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    let decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findOne({ email: decoded.email.toLowerCase() });
-
-    return res.status(200).json({tokens: user.tokens, message: "Tokens taken successfully" });
-  } catch (error) {
-    console.log("Error in getTokens route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

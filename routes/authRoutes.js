@@ -706,21 +706,28 @@ router.post("/deleteLink", async (req, res) => {
 
 const sseConnections = {};
 
-router.get("/user/:userId/updates", (req, res) => {
-  const { userId } = req.params;
+router.get("/getTokens", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(401).json({ message: "Missing authorisation header" });
+    }
 
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-  });
+    const token = authHeader.split(" ")[1];
 
-  sseConnections[userId] = res;
+    let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.on("close", () => {
-    delete sseConnections[userId];
-    console.log(`Client ${userId} disconnected from SSE.`);
-  });
+    const user = await User.findOne({ email: decoded.email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ tokens: user.tokens });
+  } catch (error) {
+    console.log("Error in getTokens route", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.post("/revenueCat", async (req, res) => {
@@ -747,14 +754,6 @@ router.post("/revenueCat", async (req, res) => {
 
     user.tokens += tokensToAdd;
     await user.save();
-
-    const newTokens = user.tokens;
-
-    if (sseConnections[userId]) {
-      sseConnections[userId].write(
-        `data: ${JSON.stringify({ tokens: newTokens })}\n\n`
-      );
-    }
 
     return res.status(200).json({ message: "Tokens added successfully" });
   } catch (error) {

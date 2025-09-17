@@ -725,7 +725,7 @@ router.get("/user/:userId/updates", (req, res) => {
 
 router.post("/revenueCat", async (req, res) => {
   try {
-    const { event } = req.body.event;
+    const { event } = req.body;
     console.log(event);
     const authHeader = req.headers["authorization"];
     if (!authHeader) {

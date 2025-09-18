@@ -704,7 +704,6 @@ router.post("/deleteLink", async (req, res) => {
   }
 });
 
-const sseConnections = {};
 
 router.get("/getTokens", async (req, res) => {
   try {

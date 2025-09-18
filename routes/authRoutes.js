@@ -157,7 +157,10 @@ The Matura Team
 
       console.log("Message sent");
     })();
-
+    const existingUser = await TempUser.findOne({email: email.toLowerCase()});
+    if(existingUser) {
+      await existingUser.deleteOne();
+    }
     const user = new TempUser({ email: email.toLowerCase(), signUpCode: code });
 
     await user.save();

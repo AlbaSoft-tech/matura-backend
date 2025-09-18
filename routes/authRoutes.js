@@ -726,7 +726,7 @@ router.get("/getTokens", async (req, res) => {
     return res.status(200).json({ tokens: user.tokens });
   } catch (error) {
     console.log("Error in getTokens route", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: error.message });
   }
 });
 

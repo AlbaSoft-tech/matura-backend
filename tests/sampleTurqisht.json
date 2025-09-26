@@ -1,45 +1,47 @@
 [
-  {
-    "title": "Metni okuyun ve soruları cevaplayın.",
-    "text": "Bugün hava çok güzeldi. Annem ve ben parkta yürüyüşe çıktık. Ağaçların altında oturduk ve piknik yaptık. Kuşlar şarkı söylüyordu ve çocuklar oyun oynuyordu. Annem bana en sevdiğim sandviçi yapmıştı. Çok mutlu bir gündü ve bolca güneş gördük.",
-    "questions": [
-      {
-        "question": "Metinde bahsedilen yer neresidir?",
-        "answer": "Park"
-      },
-      {
-        "question": "Çocuklar ne yapıyordu?",
-        "answer": "Oyun oynuyordu"
-      },
-      {
-        "question": "Annesi, metindeki kişiye ne yapmış?",
-        "answer": "Sandviç"
-      }
-    ]
-  },
-  {
-    "title": "Çoktan Seçmeli Sorular",
-    "questions": [
-      {
-        "question": "Türkiye'nin başkenti neresidir?",
-        "options": ["A. İstanbul", "B. Ankara", "C. İzmir", "D. Antalya"],
-        "answer": "B. Ankara"
-      },
-      {
-        "question": "Bir yılda kaç ay vardır?",
-        "options": ["A. 10", "B. 11", "C. 12", "D. 13"],
-        "answer": "C. 12"
-      },
-      {
-        "question": "Hangisi bir sebze değildir?",
-        "options": ["A. Domates", "B. Patates", "C. Elma", "D. Havuç"],
-        "answer": "C. Elma"
-      },
-      {
-        "question": "Vücudumuzda kanı pompalayan organ hangisidir?",
-        "options": ["A. Beyin", "B. Mide", "C. Kalp", "D. Akciğerler"],
-        "answer": "C. Kalp"
-      }
-    ]
-  }
+  [
+    {
+      "title": "Metni okuyun ve soruları cevaplayın.",
+      "text": "Bugün hava çok güzeldi. Annem ve ben parkta yürüyüşe çıktık. Ağaçların altında oturduk ve piknik yaptık. Kuşlar şarkı söylüyordu ve çocuklar oyun oynuyordu. Annem bana en sevdiğim sandviçi yapmıştı. Çok mutlu bir gündü ve bolca güneş gördük.",
+      "questions": [
+        {
+          "question": "Metinde bahsedilen yer neresidir?",
+          "answer": "Park"
+        },
+        {
+          "question": "Çocuklar ne yapıyordu?",
+          "answer": "Oyun oynuyordu"
+        },
+        {
+          "question": "Annesi, metindeki kişiye ne yapmış?",
+          "answer": "Sandviç"
+        }
+      ]
+    },
+    {
+      "title": "Çoktan Seçmeli Sorular",
+      "questions": [
+        {
+          "question": "Türkiye'nin başkenti neresidir?",
+          "options": ["A. İstanbul", "B. Ankara", "C. İzmir", "D. Antalya"],
+          "answer": "B. Ankara"
+        },
+        {
+          "question": "Bir yılda kaç ay vardır?",
+          "options": ["A. 10", "B. 11", "C. 12", "D. 13"],
+          "answer": "C. 12"
+        },
+        {
+          "question": "Hangisi bir sebze değildir?",
+          "options": ["A. Domates", "B. Patates", "C. Elma", "D. Havuç"],
+          "answer": "C. Elma"
+        },
+        {
+          "question": "Vücudumuzda kanı pompalayan organ hangisidir?",
+          "options": ["A. Beyin", "B. Mide", "C. Kalp", "D. Akciğerler"],
+          "answer": "C. Kalp"
+        }
+      ]
+    }
+  ]
 ]

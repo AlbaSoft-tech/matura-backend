@@ -1,0 +1,47 @@
+[
+  [
+    {
+      "title": "Lexo tekstin dhe përgjigju pyetjeve.",
+      "text": "Vjeshta është stina e ndryshimeve. Gjethet e pemëve ndërrojnë ngjyrë dhe bien në tokë, duke e mbuluar atë si një tapet shumëngjyrësh. Ditët shkurtohen dhe ajri bëhet më i freskët. Shqiponjat migratore fillojnë udhëtimin e tyre të gjatë drejt vendeve më të ngrohta. Njerëzit shijojnë pjekjen e mollëve dhe rrushit, duke u përgatitur për stinën e dimrit.",
+      "questions": [
+        {
+          "question": "Cila është stina që përmendet në tekst?",
+          "answer": "Vjeshta"
+        },
+        {
+          "question": "Çfarë bëjnë shqiponjat gjatë kësaj stine?",
+          "answer": "Ato migrojnë/fluturojnë drejt vendeve më të ngrohta"
+        },
+        {
+          "question": "Si e përshkruan teksti ajrin në vjeshtë?",
+          "answer": "Ajri bëhet më i freskët"
+        }
+      ]
+    },
+    {
+      "title": "Pyetje me zgjedhje",
+      "questions": [
+        {
+          "question": "Cili është kryeqyteti i Italisë?",
+          "options": ["A. Barcelona", "B. Roma", "C. Berlini", "D. Madridi"],
+          "answer": "B. Roma"
+        },
+        {
+          "question": "Sa orë ka një ditë?",
+          "options": ["A. 12", "B. 18", "C. 24", "D. 36"],
+          "answer": "C. 24"
+        },
+        {
+          "question": "Çfarë është Muri i Madh i Kinës?",
+          "options": ["A. Mal", "B. Lumi", "C. Pyll", "D. Ndërtim"],
+          "answer": "D. Ndërtim"
+        },
+        {
+          "question": "Kush është mbreti i kafshëve?",
+          "options": ["A. Tigri", "B. Ariu", "C. Luani", "D. Elefanti"],
+          "answer": "C. Luani"
+        }
+      ]
+    }
+  ]
+]

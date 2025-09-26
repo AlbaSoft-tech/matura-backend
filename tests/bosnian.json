@@ -1,1 +1,47 @@
-[[{}, {}], [{}, {}]]
+[
+  [
+    {
+      "title": "Pročitajte tekst i odgovorite na pitanja.",
+      "text": "Ljeto je najtoplije godišnje doba. Ljudi uživaju u dugim sunčanim danima i odlaze na odmor. Mnogi provode vrijeme na plaži, plivajući u moru ili se opuštajući na suncu. Voće kao što su lubenice i breskve su najukusnije upravo u ljetu. Vrijeme je za zabavu i nezaboravne avanture.",
+      "questions": [
+        {
+          "question": "Koje godišnje doba se spominje u tekstu?",
+          "answer": "Ljeto"
+        },
+        {
+          "question": "Šta ljudi rade tokom ljeta?",
+          "answer": "Odlaze na odmor/Provode vrijeme na plaži"
+        },
+        {
+          "question": "Koje voće se spominje kao ljetno voće?",
+          "answer": "Lubenice i breskve"
+        }
+      ]
+    },
+    {
+      "title": "Pitanja s višestrukim izborom",
+      "questions": [
+        {
+          "question": "Koji je glavni grad Bosne i Hercegovine?",
+          "options": ["A. Banja Luka", "B. Mostar", "C. Sarajevo", "D. Tuzla"],
+          "answer": "C. Sarajevo"
+        },
+        {
+          "question": "Koliko dana ima sedmica?",
+          "options": ["A. 5", "B. 7", "C. 10", "D. 12"],
+          "answer": "B. 7"
+        },
+        {
+          "question": "Šta je pčela?",
+          "options": ["A. Riba", "B. Ptica", "C. Kukac", "D. Biljka"],
+          "answer": "C. Kukac"
+        },
+        {
+          "question": "Koja je životinja poznata kao kralj džungle?",
+          "options": ["A. Slon", "B. Medvjed", "C. Lav", "D. Majmun"],
+          "answer": "C. Lav"
+        }
+      ]
+    }
+  ]
+]

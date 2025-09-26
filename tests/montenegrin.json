@@ -1,1 +1,47 @@
-[[{}, {}], [{}, {}]]
+[
+  [
+    {
+      "title": "Pročitajte tekst i odgovorite na pitanja.",
+      "text": "More je veliko i moćno. Njegove talase često donosi vjetar, a plaže su prepune sitnih kamena i pijeska. U moru žive mnoge ribe i druge morske životinje. Ljudi uživaju da plivaju u toploj vodi i da se sunčaju. Plovidba brodom po moru je uvijek uzbudljivo iskustvo, koje nikog ne ostavlja ravnodušnim.",
+      "questions": [
+        {
+          "question": "Šta donosi talase na more?",
+          "answer": "Vjetar"
+        },
+        {
+          "question": "Od čega su prepune plaže?",
+          "answer": "Od sitnih kamena i pijeska"
+        },
+        {
+          "question": "Šta je plovidba brodom?",
+          "answer": "Uzbudljivo iskustvo"
+        }
+      ]
+    },
+    {
+      "title": "Pitanja sa višestrukim izborom",
+      "questions": [
+        {
+          "question": "Koliko država se graniči sa Crnom Gorom?",
+          "options": ["A. Tri", "B. Četiri", "C. Pet", "D. Šest"],
+          "answer": "C. Pet"
+        },
+        {
+          "question": "Koja je najveća planeta u našem solarnom sistemu?",
+          "options": ["A. Zemlja", "B. Mars", "C. Jupiter", "D. Saturn"],
+          "answer": "C. Jupiter"
+        },
+        {
+          "question": "Koji je glavni grad Italije?",
+          "options": ["A. Madrid", "B. Pariz", "C. Atina", "D. Rim"],
+          "answer": "D. Rim"
+        },
+        {
+          "question": "Koja životinja može da leti?",
+          "options": ["A. Vrabac", "B. Mačka", "C. Pas", "D. Zec"],
+          "answer": "A. Vrabac"
+        }
+      ]
+    }
+  ]
+]

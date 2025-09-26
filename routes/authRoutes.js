@@ -8,16 +8,16 @@ import path from "path";
 import { clear } from "console";
 
 const testeShqip = JSON.parse(
-  fs.readFileSync(path.resolve("./tests/testeShqip.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/sampleShqip.json"), "utf-8")
 );
 const englishTests = JSON.parse(
   fs.readFileSync(path.resolve("./tests/englishTests.json"), "utf-8")
 );
 const testeMaqedonisht = JSON.parse(
-  fs.readFileSync(path.resolve("./tests/testeMaqedonisht.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/sampleMaqedonisht.json"), "utf-8")
 );
 const testeTurqisht = JSON.parse(
-  fs.readFileSync(path.resolve("./tests/testeTurqisht.json"), "utf-8")
+  fs.readFileSync(path.resolve("./tests/sampleTurqisht.json"), "utf-8")
 );
 const bosnianTests = JSON.parse(
   fs.readFileSync(path.resolve("./tests/bosnian.json"), "utf-8")

@@ -103,8 +103,8 @@ router.post("/signup", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
@@ -157,8 +157,8 @@ The Matura Team
 
       console.log("Message sent");
     })();
-    const existingUser = await TempUser.findOne({email: email.toLowerCase()});
-    if(existingUser) {
+    const existingUser = await TempUser.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
       await existingUser.deleteOne();
     }
     const user = new TempUser({ email: email.toLowerCase(), signUpCode: code });
@@ -706,7 +706,6 @@ router.post("/deleteLink", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 router.get("/getTokens", async (req, res) => {
   try {

@@ -2,10 +2,10 @@ import express from "express";
 import User from "../models/user.js";
 import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
+//import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
-import { clear } from "console";
+import { Resend } from "resend";
 
 const testeShqip = JSON.parse(
   fs.readFileSync(path.resolve("./tests/sampleShqip.json"), "utf-8")
@@ -66,6 +66,7 @@ const signUpToken = (username, email, password) => {
     }
   );
 };
+const resend = new Resend(process.env.RESEND);
 
 router.post("/signup", async (req, res) => {
   try {
@@ -100,6 +101,47 @@ router.post("/signup", async (req, res) => {
 
     const code = getSixDigitRandom();
 
+    resend.emails.send({
+      from: process.end.EMAIL,
+      to: email.toLowerCase(),
+      subject: "Your account verification code for Matura",
+      text: `Hello,
+
+Thank you for creating an account with Matura.
+
+Please use the following code to verify your email address: ${code}
+
+This code is valid for the next 10 minutes. Please return to the app and enter this code to complete your account setup.
+
+If you did not create an account, please ignore this email. Do not share this code with anyone.
+
+Thank you,
+The Matura Team
+`,
+      html: `
+<div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Email Verification</h2>
+    <p>Hello,</p>
+    <p>Thank you for signing up with Matura. To complete your account registration, please enter the following verification code in the app:</p>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+        <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
+    </div>
+    <p>This code is valid for the next 10 minutes. Please return to the app and enter this code to verify your email address.</p>
+    <p style="font-size: 0.9em; color: #777;">
+        If you did not create an account, please ignore this email. For your security, do not share this code with anyone.
+    </p>
+    <p style="margin-top: 30px; text-align: center; color: #555;">
+        Thank you,<br>
+        The Matura Team
+    </p>
+    <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
+        This is an automated email, please do not reply.
+    </p>
+</div>
+`,
+    });
+
+    /*
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
@@ -157,6 +199,8 @@ The Matura Team
 
       console.log("Message sent");
     })();
+    */
+
     const existingUser = await TempUser.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       await existingUser.deleteOne();
@@ -335,7 +379,7 @@ router.post("/forgotPassword", async (req, res) => {
     user.resetCode = code;
     user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
-
+    
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",

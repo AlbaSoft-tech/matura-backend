@@ -379,7 +379,48 @@ router.post("/forgotPassword", async (req, res) => {
     user.resetCode = code;
     user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
-    
+
+    resend.emails.send({
+      from: process.env.EMAIL,
+      to: email.toLowerCase(),
+      subject: "Your Password Reset Code for Matura",
+      text: `Hello,
+
+You recently requested a password reset for your Matura account.
+
+Your password reset code is: ${code}
+
+Please use this code on the password reset page to set a new password. THIS CODE IS VALID FOR THE NEXT 10 MINUTES.
+
+If you did not request a password reset, please ignore this email. Do not share this code with anyone.
+
+Thank you,
+The Matura Team
+`,
+      html: `
+<div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Password Reset Request</h2>
+    <p>Hello,</p>
+    <p>You recently requested a password reset for your Matura account. Please use the following code to reset your password:</p>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+        <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
+    </div>
+    <p>THIS CODE IS VALID FOR THE NEXT 10 MINUTES. Please return to the password reset page and enter this code to set a new password.</p>
+    <p style="font-size: 0.9em; color: #777;">
+        If you did not request a password reset, please ignore this email. For your security, do not share this code with anyone.
+    </p>
+    <p style="margin-top: 30px; text-align: center; color: #555;">
+        Thank you,<br>
+        The Matura Team
+    </p>
+    <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
+        This is an automated email, please do not reply.
+    </p>
+</div>
+`,
+    });
+
+    /*
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
@@ -437,6 +478,7 @@ The Matura Team
 
       console.log("Message sent");
     })();
+    */
 
     return res.status(200).json({ message: "Code sent, check your email" });
   } catch (error) {
@@ -602,6 +644,48 @@ router.post("/amend", async (req, res) => {
 
       const code = getSixDigitRandom();
       console.log(info.value);
+
+      resend.emails.send({
+        from: process.env.EMAIL,
+        to: info.value.toLowerCase(),
+        subject: "Your account verification code for Matura",
+        text: `Hello,
+
+You have requested to change the email address associated with your Matura account.
+
+To confirm this change, please use the following code: ${code}
+
+This code is valid for the next 10 minutes. Please return to the app and enter this code to complete the email update.
+
+If you did not request to change your email address, please ignore this email. Do not share this code with anyone.
+
+Thank you,
+The Matura Team
+`,
+        html: `
+<div style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #0056b3; text-align: center; margin-bottom: 20px;">Email Address Change Request</h2>
+    <p>Hello,</p>
+    <p>You have requested to change the email address associated with your Matura account. To confirm this change, please enter the following verification code in the app:</p>
+    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+        <p style="font-size: 24px; font-weight: bold; color: #0056b3; margin: 0;">CODE: ${code}</p>
+    </div>
+    <p>This code is valid for the next 10 minutes. Please return to the app and enter this code to complete the email update.</p>
+    <p style="font-size: 0.9em; color: #777;">
+        If you did not request to change your email address, please ignore this email. For your security, do not share this code with anyone.
+    </p>
+    <p style="margin-top: 30px; text-align: center; color: #555;">
+        Thank you,<br>
+        The Matura Team
+    </p>
+    <p style="font-size: 0.8em; text-align: center; color: #aaa; margin-top: 20px;">
+        This is an automated email, please do not reply.
+    </p>
+</div>
+`,
+      });
+
+      /*
       const transporter = nodemailer.createTransport({
         service: "gmail",
         host: "smtp.gmail.com",
@@ -612,7 +696,8 @@ router.post("/amend", async (req, res) => {
           pass: process.env.PASSWORD,
         },
       });
-
+      
+      
       (async () => {
         const sendEmail = await transporter.sendMail({
           from: {
@@ -659,7 +744,7 @@ The Matura Team
 
         console.log("Message sent");
       })();
-
+*/
       user.changeEmailCode = code;
       await user.save();
       return res.status(200).json({

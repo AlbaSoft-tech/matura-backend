@@ -102,7 +102,7 @@ router.post("/signup", async (req, res) => {
     const code = getSixDigitRandom();
 
     resend.emails.send({
-      from: process.end.EMAIL,
+      from: process.env.EMAIL,
       to: email.toLowerCase(),
       subject: "Your account verification code for Matura",
       text: `Hello,

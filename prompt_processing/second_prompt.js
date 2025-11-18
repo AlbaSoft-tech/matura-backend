@@ -1,9 +1,15 @@
 import dotenv from "dotenv";
-import "dotenv/config";
-import { GoogleGenAI } from "@google/genai";
-import refining from "./first_prompt.js";
 import path from "path";
 import { fileURLToPath } from "url";
+
+// Fix __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from parent folder
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+import { GoogleGenAI } from "@google/genai";
+import refining from "./first_prompt.js";
 import JSON5 from "json5";
 import { text } from "stream/consumers";
 
@@ -28,17 +34,17 @@ async function finalising(input, language) {
 
     while (attempts < maxRetries) {
       try {
-        response = await fetch(process.env.MICROSERVICE, {
+        response = await fetch(process.env.MICROSERVICE + "/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON5.stringify({ data, language }),
+          body: JSON.stringify({ data, language }),
         });
-
+        const result = await response.json();
         if (response.ok) {
-          const result = await response.json();
           ragged.push(result);
           break;
         }
+        console.log("Server error:", result.message);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -105,5 +111,6 @@ async function finalising(input, language) {
   const cleanedText = cleanText(output);
 
   return cleanedText;
-}
+} 
+
 export default finalising;

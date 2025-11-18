@@ -12,20 +12,7 @@ const PORT = process.env.PORT;
 job.start();
 app.use(
   cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:8081",
-        "http://localhost:5173",
-        "https://matura-web.vercel.app",
-        "https://matura-delete-account.vercel.app"
-      ];
-
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

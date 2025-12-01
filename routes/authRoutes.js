@@ -907,7 +907,7 @@ router.post(
   async (req, res) => {
     const signature = req.headers["paddle-signature"] || "";
     console.log(signature)
-    const rawRequestBody = req.body.toString();
+    const rawRequestBody = req.body
     const secretKey = process.env.WEBHOOK_SECRET_KEY || "";
     console.log(secretKey)
 

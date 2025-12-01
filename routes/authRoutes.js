@@ -897,7 +897,8 @@ router.post("/revenueCat", async (req, res) => {
 });
 
 const paddle = new Paddle({
-  apiKey: process.env.PADDLE_API_KEY,
+  apiKey: process.env.PADDLE_API_KEY, 
+  environment: "sandbox",
 });
 
 router.post(
@@ -954,5 +955,4 @@ router.post(
     res.send("Processed webhook event");
   }
 );
-
 export default router;

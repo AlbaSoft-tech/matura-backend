@@ -68,6 +68,10 @@ const signUpToken = (username, email, password) => {
 };
 const resend = new Resend(process.env.RESEND);
 
+router.get("/ping", (req, res) => {
+  res.status(200).send("Server is alive!");
+});
+
 router.post("/signup", async (req, res) => {
   try {
     const { email, username, password } = req.body;

@@ -2,7 +2,7 @@ import express from "express";
 import User from "../models/user.js";
 import TempUser from "../models/TempUser.js";
 import jwt from "jsonwebtoken";
-//import nodemailer from "nodemailer";
+import { Paddle, EventName } from "@paddle/paddle-node-sdk";
 import fs from "fs";
 import path from "path";
 import { Resend } from "resend";
@@ -298,7 +298,6 @@ router.post("/login", async (req, res) => {
       serbian: serbianTests,
       bulgarian: bulgarianTests,
     };
-
 
     console.log("sending tests: " + tests);
 
@@ -892,5 +891,64 @@ router.post("/revenueCat", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+const paddle = new Paddle({
+  apiKey: process.env.PADDLE_API_KEY,
+});
+
+router.post(
+  "/webhooks",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const signature = req.headers["paddle-signature"] || "";
+    const rawRequestBody = req.body.toString();
+    const secretKey = process.env.WEBHOOK_SECRET_KEY || "";
+
+    try {
+      if (signature && rawRequestBody) {
+        const eventData = await paddle.webhooks.unmarshal(
+          rawRequestBody,
+          secretKey,
+          signature
+        );
+        switch (eventData.eventType) {
+          // 🔥 A customer has PAID (best event to update user credits)
+          case EventName.TransactionCompleted:
+          case EventName.TransactionPaid:
+            console.log("💰 Payment successful!", eventData.data);
+
+            const user = await User.findOne({
+              email: eventData.data.custom_data.email.toLowerCase(),
+            });
+
+            if (!user) {
+              return res.status(404).json({ message: "User not found" });
+            }
+            const priceId = eventData.data.items[0].price.id;
+
+            const tokenPlans = {
+              pri_01kb8n6bhhyjm1yyqb6zmgqd2a: 10,
+            };
+
+            user.tokens += tokenPlans[priceId] || 0;
+            await user.save();
+            console.log(
+              `Added ${tokenPlans[priceId] || 0} tokens to ${user.email}`
+            );
+
+            break;
+
+          default:
+            console.log("Ignored event:", eventData.eventType);
+        }
+      } else {
+        console.log("Signature missing in header");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    res.send("Processed webhook event");
+  }
+);
 
 export default router;

@@ -919,8 +919,6 @@ router.post(
           signature
         );
         switch (eventData.eventType) {
-          // 🔥 A customer has PAID (best event to update user credits)
-          case EventName.TransactionCompleted:
           case EventName.TransactionPaid:
             console.log("💰 Payment successful!", eventData.data);
 

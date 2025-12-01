@@ -906,8 +906,10 @@ router.post(
   express.raw({ type: "application/json" }),
   async (req, res) => {
     const signature = req.headers["paddle-signature"] || "";
+    console.log(signature)
     const rawRequestBody = req.body.toString();
     const secretKey = process.env.WEBHOOK_SECRET_KEY || "";
+    console.log(secretKey)
 
     try {
       if (signature && rawRequestBody) {

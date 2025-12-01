@@ -925,7 +925,7 @@ router.post(
             console.log("💰 Payment successful!", eventData.data);
 
             const user = await User.findOne({
-              email: eventData.data.custom_data.email.toLowerCase(),
+              email: eventData.data.customData.email.toLowerCase(),
             });
 
             if (!user) {

@@ -897,7 +897,7 @@ router.post("/revenueCat", async (req, res) => {
 });
 
 const paddle = new Paddle({
-  apiKey: process.env.PADDLE_API_KEY, 
+  apiKey: process.env.PADDLE_API_KEY,
   environment: "sandbox",
 });
 
@@ -906,10 +906,10 @@ router.post(
   express.raw({ type: "application/json" }),
   async (req, res) => {
     const signature = req.headers["paddle-signature"] || "";
-    console.log(signature)
-    const rawRequestBody = req.body
+    console.log(signature);
+    const rawRequestBody = req.body;
     const secretKey = process.env.WEBHOOK_SECRET_KEY || "";
-    console.log(secretKey)
+    console.log(secretKey);
 
     try {
       if (signature && rawRequestBody) {
@@ -932,7 +932,9 @@ router.post(
             const priceId = eventData.data.items[0].price.id;
 
             const tokenPlans = {
-              pri_01kb8n6bhhyjm1yyqb6zmgqd2a: 10,
+              pri_01kbnbz70pwtmh2b1efdzyycy3: 10,
+              pri_01kbnc2ge7dezj91esgjhjpjj5: 35,
+              pri_01kbnc4516v458hng8rak0fjy0: 70,
             };
 
             user.tokens += tokenPlans[priceId] || 0;

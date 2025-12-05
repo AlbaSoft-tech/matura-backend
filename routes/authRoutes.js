@@ -920,10 +920,12 @@ router.post(
         );
         switch (eventData.eventType) {
           case EventName.TransactionPaid:
-            console.log("💰 Payment successful!", eventData.data);
+            const token = eventData.data.customData.token;
+
+            let decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             const user = await User.findOne({
-              email: eventData.data.customData.email.toLowerCase(),
+              email: decoded.email.toLowerCase(),
             });
 
             if (!user) {
